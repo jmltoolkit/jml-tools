@@ -1,25 +1,29 @@
 package io.github.jmltoolkit.smt.solver
 
-import com.github.jmlparser.smt.model.SAtom
+import io.github.jmltoolkit.smt.model.SAtom
+import io.github.jmltoolkit.smt.model.SExpr
+import io.github.jmltoolkit.smt.model.SList
+import java.io.IOException
+import java.io.PushbackReader
 import java.io.Reader
 import java.io.StringReader
 import java.util.function.Predicate
 
 object SExprParser {
     @Throws(IOException::class)
-    fun parse(input: String?): SExpr {
+    fun parse(input: String): SExpr? {
         return parse(StringReader(input))
     }
 
     @Throws(IOException::class)
-    fun parse(reader: Reader?): SExpr? {
+    fun parse(reader: Reader): SExpr? {
         return parse(PushbackReader(reader))
     }
 
     @Throws(IOException::class)
     fun parse(reader: PushbackReader): SExpr? {
         var c = peekChar(reader)
-        if (c == (-1.toChar()).code) // end of input
+        if (c == -1) // end of input
             return null
         else if (c == '('.code) {
             consumeChar(reader) // consume '('
@@ -33,7 +37,7 @@ object SExprParser {
                 val child: SExpr = parse(reader) ?: throw IllegalArgumentException("List not closed.")
                 seq.add(child)
             } while (true)
-            return SList(null, null, seq.toArray(arrayOfNulls<SExpr>(0)))
+            return SList(null, null, listOf())
         } else if (Character.isDigit(c) || c == '-'.code) {
             return parseNumber(reader)
         } else if (Character.isAlphabetic(c) || c == ':'.code) {
@@ -106,7 +110,7 @@ object SExprParser {
         var c: Int
         do {
             c = reader.read()
-        } while (!pred.test(c) && c != (-1.toChar()).code)
+        } while (!pred.test(c) && c != -1)
         reader.unread(c)
         return c
     }
@@ -154,9 +158,9 @@ object SExprParser {
     }
 
     @Throws(IOException::class)
-    fun parseAll(`in`: Reader?): List<SExpr> {
-        val r: PushbackReader = PushbackReader(`in`)
-        val exprs: MutableList<SExpr> = ArrayList<SExpr>(1024)
+    fun parseAll(input: Reader): List<SExpr> {
+        val r = PushbackReader(input)
+        val exprs: MutableList<SExpr> = ArrayList(1024)
         var c: Int
         while ((r.read().also { c = it }) != -1) {
             r.unread(c)

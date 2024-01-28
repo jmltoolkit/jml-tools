@@ -1,6 +1,7 @@
 package io.github.jmltoolkit.smt
 
 import com.github.javaparser.ast.expr.Expression
+import io.github.jmltoolkit.smt.model.SExpr
 
 /**
  * @author Alexander Weigl

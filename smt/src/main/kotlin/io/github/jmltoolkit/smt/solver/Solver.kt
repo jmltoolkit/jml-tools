@@ -11,12 +11,12 @@ import java.util.concurrent.ForkJoinTask
  * @version 1 (08.08.22)
  */
 class Solver {
-    fun runAsync(input: String?): ForkJoinTask<SolverAnswer> {
+    fun runAsync(input: String): ForkJoinTask<SolverAnswer> {
         return ForkJoinPool.commonPool().submit<SolverAnswer> { run(input) }
     }
 
     @Throws(IOException::class)
-    fun run(input: String?): SolverAnswer {
+    fun run(input: String): SolverAnswer {
         return run { writer: PrintWriter -> writer.println(input) }
     }
 

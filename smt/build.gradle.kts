@@ -10,6 +10,8 @@ repositories {
 
 dependencies {
     api(libs.jmlcore)
+    implementation(libs.guava)
+    implementation(project(":utils"))
 }
 
 testing {

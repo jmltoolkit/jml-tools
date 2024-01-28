@@ -1,292 +1,247 @@
-package com.github.jmlparser.wd;
+package io.github.jmltoolkit.wd
 
-import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.jml.body.JmlClassExprDeclaration;
-import com.github.javaparser.ast.jml.clauses.JmlMultiExprClause;
-import com.github.javaparser.ast.jml.expr.JmlLabelExpr;
-import com.github.javaparser.ast.jml.expr.JmlLetExpr;
-import com.github.javaparser.ast.jml.expr.JmlQuantifiedExpr;
-import com.github.javaparser.ast.jml.expr.JmlTypeExpr;
-import com.github.javaparser.ast.jml.stmt.JmlExpressionStmt;
-import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.jmlparser.smt.ArithmeticTranslator;
-import com.github.jmlparser.smt.JmlExpr2Smt;
-import com.github.jmlparser.smt.SmtQuery;
-import com.github.jmlparser.smt.SmtTermFactory;
-import com.github.jmlparser.smt.model.SExpr;
-import org.jetbrains.annotations.NotNull;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.github.javaparser.ast.expr.*
+import com.github.javaparser.ast.jml.body.JmlClassExprDeclaration
+import com.github.javaparser.ast.jml.clauses.JmlMultiExprClause
+import com.github.javaparser.ast.jml.expr.JmlLabelExpr
+import com.github.javaparser.ast.jml.expr.JmlLetExpr
+import com.github.javaparser.ast.jml.expr.JmlQuantifiedExpr
+import com.github.javaparser.ast.jml.expr.JmlTypeExpr
+import com.github.javaparser.ast.jml.stmt.JmlExpressionStmt
+import com.github.javaparser.ast.visitor.GenericVisitorAdapter
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter
+import io.github.jmltoolkit.smt.ArithmeticTranslator
+import io.github.jmltoolkit.smt.JmlExpr2Smt
+import io.github.jmltoolkit.smt.SmtQuery
+import io.github.jmltoolkit.smt.SmtTermFactory
+import io.github.jmltoolkit.smt.model.SExpr
+import java.math.BigInteger
 
 /**
  * @author Alexander Weigl
  * @version 1 (14.06.22)
  */
-public class WDVisitor extends VoidVisitorAdapter<Object> {
-    public WDVisitor() {
-    }
-
-    @Override
-    public void visit(JmlExpressionStmt n, Object arg) {
-        n.getExpression().accept(this, arg);
+class WDVisitor : VoidVisitorAdapter<Any?>() {
+    override fun visit(n: JmlExpressionStmt, arg: Any?) {
+        n.expression.accept<Any>(this, arg)
     }
 }
 
-class WDVisitorExpr extends GenericVisitorAdapter<SExpr, Object> {
-    @NotNull
-    private final JmlExpr2Smt smtFormula;
-    private final ArithmeticTranslator translator;
+class WDVisitorExpr(smtLog: SmtQuery, private val translator: ArithmeticTranslator) :
+    GenericVisitorAdapter<SExpr, Any?>() {
+    private val smtFormula: JmlExpr2Smt = JmlExpr2Smt(smtLog, translator)
 
-    private static final SmtTermFactory term = SmtTermFactory.INSTANCE;
-
-    WDVisitorExpr(SmtQuery smtLog, ArithmeticTranslator translator) {
-        smtFormula = new JmlExpr2Smt(smtLog, translator);
-        this.translator = translator;
-    }
-
-    @Override
-    public SExpr visit(NameExpr n, Object arg) {
-        String name = n.getNameAsString();
-        switch (name) {
-            case "\\result":
-            case "\\exception":
-                return term.makeTrue();
-            default:
-                return term.makeTrue();
+    override fun visit(n: NameExpr, arg: Any?): SExpr {
+        val name = n.nameAsString
+        return when (name) {
+            "\\result", "\\exception" -> term.makeTrue()
+            else -> term.makeTrue()
         }
     }
 
-    @Override
-    public SExpr visit(ArrayAccessExpr n, Object arg) {
+    override fun visit(n: ArrayAccessExpr, arg: Any?): SExpr {
         return term.and(
-                n.getName().accept(this, arg),
-                n.getIndex().accept(this, arg));
+            n.name.accept(this, arg),
+            n.index.accept(this, arg)
+        )
     }
 
-    @Override
-    public SExpr visit(ArrayCreationExpr n, Object arg) {
+    override fun visit(n: ArrayCreationExpr, arg: Any?): SExpr {
         //TODO
-        return n.getInitializer().get().accept(this, arg);
+        return n.initializer.get().accept(this, arg)
     }
 
-    @Override
-    public SExpr visit(ArrayInitializerExpr n, Object arg) {
-        List<SExpr> seq = n.getValues().stream().map(it -> it.accept(this, arg)).collect(Collectors.toList());
-        return term.and(seq);
+    override fun visit(n: ArrayInitializerExpr, arg: Any?): SExpr {
+        val seq = n.values.map { it.accept(this, arg) }
+        return term.and(seq)
     }
 
-    @Override
-    public SExpr visit(AssignExpr n, Object arg) {
-        return term.makeFalse();
+    override fun visit(n: AssignExpr, arg: Any?): SExpr {
+        return term.makeFalse()
     }
 
-    @Override
-    public SExpr visit(BinaryExpr n, Object arg) {
-        switch (n.getOperator()) {
-            case IMPLICATION:
-                BinaryExpr be = new BinaryExpr(
-                        new UnaryExpr(n.getLeft(), UnaryExpr.Operator.LOGICAL_COMPLEMENT),
-                        n.getRight(), BinaryExpr.Operator.OR);
-                return be.accept(this, arg);
-            case DIVIDE:
-            case REMAINDER:
-                SExpr fml = n.getRight().accept(smtFormula, arg);
+    override fun visit(n: BinaryExpr, arg: Any?): SExpr {
+        when (n.operator) {
+            BinaryExpr.Operator.IMPLICATION -> {
+                val be = BinaryExpr(
+                    UnaryExpr(n.left, UnaryExpr.Operator.LOGICAL_COMPLEMENT),
+                    n.right, BinaryExpr.Operator.OR
+                )
+                return be.accept(this, arg)
+            }
+
+            BinaryExpr.Operator.DIVIDE, BinaryExpr.Operator.REMAINDER -> {
+                val fml = n.right.accept(smtFormula, arg)
                 return term.and(
-                        n.getRight().accept(this, arg),
-                        n.getLeft().accept(this, arg),
-                        term.not(translator.binary(BinaryExpr.Operator.EQUALS,
-                                fml, smtFormula.getTranslator().makeInt(BigInteger.ZERO))));
-            default:
-                return term.and(
-                        n.getRight().accept(this, arg),
-                        n.getLeft().accept(this, arg));
+                    n.right.accept(this, arg),
+                    n.left.accept(this, arg),
+                    term.not(
+                        translator.binary(
+                            BinaryExpr.Operator.EQUALS,
+                            fml, smtFormula.translator.makeInt(BigInteger.ZERO)
+                        )
+                    )
+                )
+            }
+
+            else -> return term.and(
+                n.right.accept(this, arg),
+                n.left.accept(this, arg)
+            )
         }
     }
 
-    @Override
-    public SExpr visit(BooleanLiteralExpr n, Object arg) {
-        return term.makeTrue();
+    override fun visit(n: BooleanLiteralExpr, arg: Any?): SExpr {
+        return term.makeTrue()
     }
 
-    @Override
-    public SExpr visit(CastExpr n, Object arg) {
+    override fun visit(n: CastExpr, arg: Any?): SExpr {
         //TODO Type-check?
-        return n.getExpression().accept(this, arg);
+        return n.expression.accept(this, arg)
     }
 
-    @Override
-    public SExpr visit(CharLiteralExpr n, Object arg) {
-        return term.makeTrue();
+    override fun visit(n: CharLiteralExpr, arg: Any?): SExpr {
+        return term.makeTrue()
     }
 
-    @Override
-    public SExpr visit(ClassExpr n, Object arg) {
-        return term.makeFalse();
+    override fun visit(n: ClassExpr, arg: Any?): SExpr {
+        return term.makeFalse()
     }
 
-    @Override
-    public SExpr visit(DoubleLiteralExpr n, Object arg) {
-        return term.makeTrue();
+    override fun visit(n: DoubleLiteralExpr, arg: Any?): SExpr {
+        return term.makeTrue()
     }
 
-    @Override
-    public SExpr visit(EnclosedExpr n, Object arg) {
-        return wd(n.getInner());
+    override fun visit(n: EnclosedExpr, arg: Any?): SExpr {
+        return wd(n.inner)
     }
 
-    @Override
-    public SExpr visit(FieldAccessExpr n, Object arg) {
-        return wd(n.getScope());
+    override fun visit(n: FieldAccessExpr, arg: Any?): SExpr {
+        return wd(n.scope)
     }
 
-    @Override
-    public SExpr visit(InstanceOfExpr n, Object arg) {
-        return n.getExpression().accept(this, arg);
+    override fun visit(n: InstanceOfExpr, arg: Any?): SExpr {
+        return n.expression.accept(this, arg)
     }
 
-    @Override
-    public SExpr visit(IntegerLiteralExpr n, Object arg) {
-        return term.makeTrue();
+    override fun visit(n: IntegerLiteralExpr, arg: Any?): SExpr {
+        return term.makeTrue()
     }
 
-    @Override
-    public SExpr visit(StringLiteralExpr n, Object arg) {
-        return term.makeTrue();
+    override fun visit(n: StringLiteralExpr, arg: Any?): SExpr {
+        return term.makeTrue()
     }
 
-    @Override
-    public SExpr visit(SuperExpr n, Object arg) {
-        return term.makeTrue();
+    override fun visit(n: SuperExpr, arg: Any?): SExpr {
+        return term.makeTrue()
     }
 
-    @Override
-    public SExpr visit(ThisExpr n, Object arg) {
-        return term.makeTrue();
+    override fun visit(n: ThisExpr, arg: Any?): SExpr {
+        return term.makeTrue()
     }
 
-    @Override
-    public SExpr visit(UnaryExpr n, Object arg) {
-        return n.getExpression().accept(this, arg);
+    override fun visit(n: UnaryExpr, arg: Any?): SExpr {
+        return n.expression.accept(this, arg)
     }
 
-    @Override
-    public SExpr visit(LambdaExpr n, Object arg) {
-        return super.visit(n, arg);
+    override fun visit(n: LambdaExpr, arg: Any?): SExpr {
+        return super.visit(n, arg)
     }
 
-    @Override
-    public SExpr visit(MethodReferenceExpr n, Object arg) {
-        return super.visit(n, arg);
+    override fun visit(n: MethodReferenceExpr, arg: Any?): SExpr {
+        return super.visit(n, arg)
     }
 
-    @Override
-    public SExpr visit(TypeExpr n, Object arg) {
-        return super.visit(n, arg);
+    override fun visit(n: TypeExpr, arg: Any?): SExpr {
+        return super.visit(n, arg)
     }
 
-    @Override
-    public SExpr visit(SwitchExpr n, Object arg) {
-        return term.and(wd(n.getSelector()));
+    override fun visit(n: SwitchExpr, arg: Any?): SExpr {
+        return term.and(wd(n.selector))
     }
 
-    @Override
-    public SExpr visit(TextBlockLiteralExpr n, Object arg) {
-        return term.makeTrue();
+    override fun visit(n: TextBlockLiteralExpr, arg: Any?): SExpr {
+        return term.makeTrue()
     }
 
-    @Override
-    public SExpr visit(PatternExpr n, Object arg) {
-        return term.makeTrue();
+    override fun visit(n: PatternExpr, arg: Any?): SExpr {
+        return term.makeTrue()
     }
 
-    @Override
-    public SExpr visit(JmlQuantifiedExpr n, Object arg) {
+    override fun visit(n: JmlQuantifiedExpr, arg: Any?): SExpr {
         /*The quantified-expression is well-defined iff the two sub-expressions are well-defined. For a quantifier Q*/
-        List<SExpr> seq = n.getExpressions().stream()
-                .map(it -> it.accept(this, arg))
-                .collect(Collectors.toList());
+        val seq: List<SExpr> = n.expressions.map { it.accept(this, arg) }
+        val r: Expression = n.expressions[0]
+        val v: Expression = n.expressions[0]
 
-        Expression r = n.getExpressions().get(0);
-        Expression v = n.getExpressions().get(0);
+        val args: List<SExpr> = ArrayList<SExpr>()
 
-        List<SExpr> args = new ArrayList<>();
-
-        if (JmlQuantifiedExpr.JmlDefaultBinder.CHOOSE.equals(n.getBinder())) {
+        if (JmlQuantifiedExpr.JmlDefaultBinder.CHOOSE == n.binder) {
             return term.and(
-                    term.forall(args, wd(r)),
-                    term.forall(args, term.impl(valueOf(r), wd(v))),
-                    term.exists(args, term.and(
-                            valueOf(r),
-                            valueOf(v))));
+                term.forall(args, wd(r)),
+                term.forall(args, term.impl(valueOf(r), wd(v))),
+                term.exists(
+                    args, term.and(
+                        valueOf(r),
+                        valueOf(v)
+                    )
+                )
+            )
         }
         return term.and(
-                term.forall(args, wd(r)),
-                term.forall(args, term.impl(valueOf(r), wd(v))));
+            term.forall(args, wd(r)),
+            term.forall(args, term.impl(valueOf(r), wd(v)))
+        )
     }
 
-    private SExpr valueOf(Expression e) {
-        return e.accept(smtFormula, null);
+    private fun valueOf(e: Expression): SExpr {
+        return e.accept(smtFormula, null)
     }
 
-    private SExpr wd(Expression e) {
-        return e.accept(this, null);
+    private fun wd(e: Expression): SExpr {
+        return e.accept(this, null)
     }
 
-    @Override
-    public SExpr visit(JmlExpressionStmt n, Object arg) {
-        return wd(n.getExpression());
+    override fun visit(n: JmlExpressionStmt, arg: Any?): SExpr {
+        return wd(n.expression)
     }
 
-    @Override
-    public SExpr visit(JmlLabelExpr n, Object arg) {
-        return wd(n.getExpression());
+    override fun visit(n: JmlLabelExpr, arg: Any?): SExpr {
+        return wd(n.expression)
     }
 
-    @Override
-    public SExpr visit(JmlLetExpr n, Object arg) {
-        return term.and(wd(n.getBody())  /* TODO  arguments */, term.makeTrue());
+    override fun visit(n: JmlLetExpr, arg: Any?): SExpr {
+        return term.and(wd(n.body),  /* TODO  arguments */term.makeTrue())
     }
 
-    @Override
-    public SExpr visit(JmlClassExprDeclaration n, Object arg) {
-        return term.makeTrue();
+    override fun visit(n: JmlClassExprDeclaration, arg: Any?): SExpr {
+        return term.makeTrue()
     }
 
-    @Override
-    public SExpr visit(JmlTypeExpr n, Object arg) {
-        return term.makeTrue();
+    override fun visit(n: JmlTypeExpr, arg: Any?): SExpr {
+        return term.makeTrue()
     }
 
-    @Override
-    public SExpr visit(JmlMultiExprClause n, Object arg) {
-        return term.and(n.getExpressions().stream().map(this::wd).collect(Collectors.toList()));
-    }
+    override fun visit(n: JmlMultiExprClause, arg: Any?) =
+        term.and(n.expressions.map { e: Expression -> this.wd(e) })
 
-    @Override
-    public SExpr visit(MethodCallExpr n, Object arg) {
-        String name = n.getNameAsString();
-        switch (name) {
-            case "\\old":
-            case "\\pre":
-            case "\\past":
-                /* Well-definedness: The expression is well-defined if the first argument is well-defined
+    override fun visit(n: MethodCallExpr, arg: Any?): SExpr {
+        val name = n.nameAsString
+        when (name) {
+            "\\old", "\\pre", "\\past" ->                 /* Well-definedness: The expression is well-defined if the first argument is well-defined
                    and any label argument names either a built-in label (§11.611.6) or an in-scope Java or
                    JML ghost label (S11.511.5).*/
-                return n.getArguments().get(0).accept(this, arg);
-            case "\\fresh":
-                /* Well-definedness: The argument must be well-defined and non-null. The second argument,
-                   if present, must be the identifier corresponding to an in-scope label or a built-in label. */
-                return n.getArguments().get(0).accept(this, arg);
-            //TODO valueOf(n.getArguments().get(0)) != null
-        }
+                return n.arguments[0].accept(this, arg)
 
-        List<SExpr> seq = n.getArguments().stream()
-                .map(it -> it.accept(this, arg))
-                .collect(Collectors.toList());
-        return term.and(seq);
+            "\\fresh" ->                 /* Well-definedness: The argument must be well-defined and non-null. The second argument,
+                   if present, must be the identifier corresponding to an in-scope label or a built-in label. */
+                return n.arguments[0].accept(this, arg)
+        }
+        val seq = n.arguments.map { it: Expression -> it.accept(this, arg) }
+        return term.and(seq)
+    }
+
+    companion object {
+        private val term: SmtTermFactory = SmtTermFactory
     }
 }

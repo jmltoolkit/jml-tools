@@ -1,19 +1,15 @@
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
+package io.github.jmltoolkit.cli
 
-import java.util.ArrayList;
-import java.util.List;
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.multiple
+import com.github.ajalt.clikt.parameters.types.file
 
 /**
  * @author Alexander Weigl
  * @version 1 (09.04.23)
  */
-@Parameters(commandNames = {"format"},
-        commandDescription = "Format the JML comments inside Java files.")
-public class PrettyPrintCommand {
-    @Parameter(description = "Files to check", required = true)
-    private List<String> files = new ArrayList<>();
-
-    public void run() {
-    }
+class PrettyPrintCommand : CliktCommand("Format the JML comments inside Java files.", name = "format") {
+    private val files by argument("FILES").file().multiple()
+    override fun run() {}
 }

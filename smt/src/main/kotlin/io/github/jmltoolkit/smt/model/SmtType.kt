@@ -9,13 +9,12 @@ open class SmtType private constructor(private val name: String) {
     }
 
     class Array(val from: SmtType, val to: SmtType) : SmtType("(Array " + from.name + " " + to.name + ")")
+
     companion object {
         val FP32: SmtType = SmtType("(_ FloatingPoint 32)")
         val FP64: SmtType = SmtType("(_ FloatingPoint 64)")
         val STRING: SmtType = SmtType("String")
 
-
-        @Nonnull
         private val bvCache: MutableMap<Int, BitVec> = HashMap(8)
 
         val COMMAND: SmtType = SmtType("_COMMAND_")

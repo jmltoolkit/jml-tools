@@ -2,15 +2,17 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-commons-math3 = "3.6.1"
 guava = "32.1.2-jre"
 gson = "2.9.1"
 jmlparser = "3.25.8-SNAPSHOT"
 logback = "1.4.0"
 jupiter = "5.12.0"
+clickt = "4.2.2"
+jdk = "21"
+kotlin = "1.9.20"
 
 [libraries]
-commons-math3 = { module = "org.apache.commons:commons-math3", version.ref = "commons-math3" }
+clickt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clickt" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 jmlcore = { module = "io.github.jmltoolkit:jmlparser-core", version.ref = "jmlparser" }

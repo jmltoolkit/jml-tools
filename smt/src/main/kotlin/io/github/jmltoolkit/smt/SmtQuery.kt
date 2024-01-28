@@ -1,6 +1,9 @@
 package io.github.jmltoolkit.smt
 
-import com.github.jmlparser.smt.model.SExpr
+import io.github.jmltoolkit.smt.model.SExpr
+import io.github.jmltoolkit.smt.model.SmtType
+import io.github.jmltoolkit.smt.solver.AppendableTo
+import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.function.Consumer
 
@@ -9,17 +12,16 @@ import java.util.function.Consumer
  * @version 1 (07.08.22)
  */
 class SmtQuery : AppendableTo {
-    private val commands: MutableList<SExpr?> = ArrayList<SExpr>(1024)
-
-    private val variableStack: MutableList<MutableMap<String, SmtType?>> = ArrayList<MutableMap<String, SmtType?>>()
+    private val commands: MutableList<SExpr> = ArrayList(1024)
+    private val variableStack: MutableList<MutableMap<String, SmtType>> = ArrayList()
 
     init {
-        variableStack.add(HashMap<String, SmtType>())
+        variableStack.add(HashMap())
     }
 
-    fun declareConst(name: String, type: SmtType?): Boolean {
+    fun declareConst(name: String, type: SmtType): Boolean {
         if (!declared(name)) {
-            val a: SExpr? = term.list(
+            val a = term.list(
                 null, SmtType.COMMAND,
                 "declare-const", name, term.type(type)
             )
@@ -31,7 +33,7 @@ class SmtQuery : AppendableTo {
     }
 
     fun push() {
-        variableStack.add(HashMap<String, SmtType>())
+        variableStack.add(HashMap())
         commands.add(term.command("push"))
     }
 
@@ -44,23 +46,23 @@ class SmtQuery : AppendableTo {
         return currentFrame.containsKey(name)
     }
 
-    private val currentFrame: MutableMap<String, Any?>
+    private val currentFrame
         get() = variableStack[variableStack.size - 1]
 
-    fun appendTo(pw: PrintWriter) {
+    override fun appendTo(writer: PrintWriter) {
         for (command in commands) {
-            command.appendTo(pw)
-            pw.println()
+            command.appendTo(writer)
+            writer.println()
         }
     }
 
 
     fun defineThis() {
         declareConst("this", SmtType.JAVA_OBJECT)
-        addAssert(term.nonNull(term.`var`(SmtType.JAVA_OBJECT, null, "this")))
+        addAssert(term.nonNull(term.variable(SmtType.JAVA_OBJECT, null, "this")))
     }
 
-    fun addAssert(nonNull: SExpr?) {
+    fun addAssert(nonNull: SExpr) {
         commands.add(term.command("assert", nonNull))
     }
 
@@ -71,8 +73,8 @@ class SmtQuery : AppendableTo {
 
     override fun toString(): String {
         val sw = StringWriter()
-        val pw: PrintWriter = PrintWriter(sw)
-        commands.forEach(Consumer<SExpr> { a: SExpr ->
+        val pw = PrintWriter(sw)
+        commands.forEach(Consumer { a: SExpr ->
             a.appendTo(pw)
             pw.println()
         })
@@ -80,6 +82,6 @@ class SmtQuery : AppendableTo {
     }
 
     companion object {
-        private val term: SmtTermFactory = SmtTermFactory.INSTANCE
+        private val term: SmtTermFactory = SmtTermFactory
     }
 }

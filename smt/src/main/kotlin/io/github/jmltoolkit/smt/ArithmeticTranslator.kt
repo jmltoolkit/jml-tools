@@ -13,11 +13,11 @@ import java.math.BigInteger
  * @version 1 (01.07.22)
  */
 interface ArithmeticTranslator {
-    fun binary(operator: BinaryExpr.Operator?, left: SExpr, right: SExpr): SExpr
+    fun binary(operator: BinaryExpr.Operator, left: SExpr, right: SExpr): SExpr
 
     fun makeChar(n: CharLiteralExpr): SExpr
 
-    fun unary(operator: UnaryExpr.Operator?, accept: SExpr): SExpr
+    fun unary(operator: UnaryExpr.Operator, accept: SExpr): SExpr
 
     fun makeLong(n: LongLiteralExpr): SExpr
 
@@ -37,9 +37,9 @@ interface ArithmeticTranslator {
 
     fun getType(asPrimitive: ResolvedType): SmtType
 
-    fun arrayLength(obj: SExpr?): SExpr
+    fun arrayLength(obj: SExpr): SExpr
 
     fun makeInt(i: Long): SExpr
 
-    fun makeVar(rtype: ResolvedType?): SExpr
+    fun makeVar(rtype: ResolvedType): SExpr
 }

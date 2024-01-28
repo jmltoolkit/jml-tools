@@ -16,7 +16,7 @@ import com.github.javaparser.ast.stmt.ExpressionStmt
 import com.github.javaparser.ast.stmt.Statement
 import com.github.javaparser.ast.type.ClassOrInterfaceType
 import com.github.javaparser.utils.Pair
-import com.github.jmlparser.utils.Helper
+import io.github.jmltoolkit.utils.Helper
 import java.util.*
 
 /**
@@ -30,7 +30,7 @@ class LambdaReplacer(private val nameGenerator: NameGenerator) : Transformer {
         return Helper.findAndApply(LambdaExpr::class.java, a) { expr: LambdaExpr -> this.rewriteLambda(expr) }
     }
 
-    private fun <T : Node?> rewriteLambda(expr: LambdaExpr): Node {
+    private fun rewriteLambda(expr: LambdaExpr): Node {
         val enclosingType = expr.getParentNodeOfType(
             TypeDeclaration::class.java
         )
@@ -43,7 +43,7 @@ class LambdaReplacer(private val nameGenerator: NameGenerator) : Transformer {
 
     private fun instantiate(decl: ClassOrInterfaceDeclaration): ObjectCreationExpr {
         val type = ClassOrInterfaceType(null, decl.nameAsString)
-        return ObjectCreationExpr(null, type, NodeList<Any?>())
+        return ObjectCreationExpr(null, type, NodeList())
     }
 
     private fun liftToInnerClass(lambdaExpr: LambdaExpr): ClassOrInterfaceDeclaration {
@@ -51,7 +51,7 @@ class LambdaReplacer(private val nameGenerator: NameGenerator) : Transformer {
         val interfazeName = sai.a
         val method = sai.b
         val name = nameGenerator.generate("__GENERATED_", lambdaExpr.range.orElse(null).begin)
-        val it = ClassOrInterfaceDeclaration(NodeList<Any?>(), false, name)
+        val it = ClassOrInterfaceDeclaration(NodeList(), false, name)
         it.addImplementedType(interfazeName)
         it.addMember(method)
         return it

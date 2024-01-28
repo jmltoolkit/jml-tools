@@ -22,19 +22,20 @@ import com.github.javaparser.resolution.types.ResolvedType
 object JMLUtils {
     const val GENERATED_COMBINED: String = "_generated_combined_"
 
-    fun unroll(n: JmlMultiCompareExpr): Expression? {
+    @Suppress("unused")
+    fun unroll(n: JmlMultiCompareExpr): Expression {
         val r: Expression =
             if (n.expressions.isEmpty()) {
                 BooleanLiteralExpr(true)
-            } else if (n.expressions.size === 1) {
-                n.expressions.get(0)
+            } else if (n.expressions.size == 1) {
+                n.expressions[0]
             } else {
                 var e: Expression? = null
                 for (i in 0 until n.expressions.size - 1) {
-                    val cmp: BinaryExpr = BinaryExpr(
-                        n.expressions.get(i).clone(),
-                        n.expressions.get(i + 1).clone(),
-                        n.operators.get(i)
+                    val cmp = BinaryExpr(
+                        n.expressions[i].clone(),
+                        n.expressions[i + 1].clone(),
+                        n.operators[i]
                     )
                     e = if (e == null) cmp else BinaryExpr(e, cmp, BinaryExpr.Operator.AND)
                 }
@@ -44,7 +45,7 @@ object JMLUtils {
         return r
     }
 
-    fun unroll(old: NodeList<JmlContract?>) {
+    fun unroll(old: NodeList<JmlContract>) {
         if (old.isEmpty()) return
         val target: ArrayList<JmlContract> = ArrayList<JmlContract>(128)
         for (c in old) {
@@ -67,7 +68,8 @@ object JMLUtils {
         return seq
     }
 
-    fun createJointContract(m: NodeList<JmlContract?>): JmlContract {
+    @Suppress("unused")
+    fun createJointContract(m: NodeList<JmlContract>): JmlContract {
         val find = m.stream()
             .filter { name ->
                 name.getName().map { simpleName -> simpleName.asString().equals(GENERATED_COMBINED) }
@@ -77,7 +79,7 @@ object JMLUtils {
 
         unroll(m)
 
-        val contract: JmlContract = JmlContract()
+        val contract = JmlContract()
         contract.setName(SimpleName(GENERATED_COMBINED))
         //TODO weigl combine all requires, ensures ... clauses
         m.add(contract)
@@ -86,7 +88,7 @@ object JMLUtils {
 
     fun resolvedType2Type(type: ResolvedType): Type {
         if (type.isPrimitive) {
-            val rType = type.asPrimitive()
+            val rType = type.asPrimitive()!!
             return PrimitiveType(
                 when (rType) {
                     BYTE -> PrimitiveType.Primitive.BYTE

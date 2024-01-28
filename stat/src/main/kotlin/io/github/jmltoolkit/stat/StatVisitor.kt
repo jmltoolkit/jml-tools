@@ -1,15 +1,27 @@
 package io.github.jmltoolkit.stat
 
-import com.github.javaparser.ast.*
+import com.github.javaparser.ast.CompilationUnit
+import com.github.javaparser.ast.Node
+import com.github.javaparser.ast.NodeList
 import com.github.javaparser.ast.body.*
 import com.github.javaparser.ast.expr.*
-import com.github.javaparser.ast.jml.*
-import com.github.javaparser.ast.jml.expr.JmlLabelExpr
-import com.github.javaparser.ast.jml.expr.JmlLetExpr
-import com.github.javaparser.ast.jml.expr.JmlMultiCompareExpr
-import com.github.javaparser.ast.jml.expr.JmlTypeExpr
-import com.github.javaparser.ast.type.*
+import com.github.javaparser.ast.jml.NodeWithJmlTags
+import com.github.javaparser.ast.jml.body.JmlClassExprDeclaration
+import com.github.javaparser.ast.jml.body.JmlFieldDeclaration
+import com.github.javaparser.ast.jml.body.JmlMethodDeclaration
+import com.github.javaparser.ast.jml.body.JmlRepresentsDeclaration
+import com.github.javaparser.ast.jml.clauses.*
+import com.github.javaparser.ast.jml.doc.*
+import com.github.javaparser.ast.jml.expr.*
+import com.github.javaparser.ast.jml.stmt.*
+import com.github.javaparser.ast.modules.ModuleDeclaration
+import com.github.javaparser.ast.nodeTypes.NodeWithModifiers
+import com.github.javaparser.ast.nodeTypes.NodeWithName
+import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName
+import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt
+import com.github.javaparser.ast.visitor.GenericVisitorAdapter
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter
+import com.github.javaparser.jml.JmlDocSanitizer
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import java.util.*
@@ -22,13 +34,26 @@ class StatVisitor(
     private val xmlDocument: Document,
     private val keys: List<String>,
     private val expressionCosts: ExpressionCosts
-) : VoidVisitorAdapter<Element?>() {
+) : VoidVisitorAdapter<Element>() {
     //region Java Stuff
-    fun visit(n: CompilationUnit, arg: Element) {
-        super.visit(n, newJavaContext(arg, n.javaClass.getSimpleName(), n.getStorage().get().getFileName()))
+    override fun visit(n: CompilationUnit, arg: Element) {
+        super.visit(n, newJavaContext(arg, n.javaClass.getSimpleName(), n.storage.get().fileName))
     }
 
-    fun visit(n: MethodDeclaration, arg: Element) {
+    override fun visit(n: MethodDeclaration, arg: Element) {
+        val arg = newJavaContext(
+            arg, n.javaClass.getSimpleName(),
+            n.getDeclarationAsString(false, false, true)
+        )
+        super.visit(n, arg)
+    }
+
+    override fun visit(n: ClassOrInterfaceDeclaration, arg: Element) {
+        val arg = newJavaContext(arg, n)
+        super.visit(n, arg)
+    }
+
+    override fun visit(n: ConstructorDeclaration, arg: Element) {
         var arg = arg
         arg = newJavaContext(
             arg, n.javaClass.getSimpleName(),
@@ -37,49 +62,32 @@ class StatVisitor(
         super.visit(n, arg)
     }
 
-    fun visit(n: ClassOrInterfaceDeclaration?, arg: Element?) {
-        var arg = arg
-        arg = newJavaContext(arg, n)
+    override fun visit(n: AnnotationDeclaration, arg: Element) {
+        val arg = newJavaContext(arg, n)
         super.visit(n, arg)
     }
 
-    fun visit(n: ConstructorDeclaration, arg: Element) {
-        var arg = arg
-        arg = newJavaContext(
-            arg, n.javaClass.getSimpleName(),
-            n.getDeclarationAsString(false, false, true)
-        )
+    override fun visit(n: AnnotationMemberDeclaration, arg: Element) {
         super.visit(n, arg)
     }
 
-    fun visit(n: AnnotationDeclaration?, arg: Element?) {
-        var arg = newJavaContext(arg, n)
-        super.visit(n, arg)
-    }
-
-    fun visit(n: AnnotationMemberDeclaration?, arg: Element?) {
-        super.visit(n, arg)
-    }
-
-    fun visit(n: EnumDeclaration?, arg: Element?) {
+    override fun visit(n: EnumDeclaration, arg: Element) {
         super.visit(n, newJavaContext(arg, n))
     }
 
-    fun visit(n: LocalClassDeclarationStmt?, arg: Element?) {
+    override fun visit(n: LocalClassDeclarationStmt, arg: Element) {
         super.visit(n, arg)
     }
 
-    fun visit(n: ModuleDeclaration?, arg: Element?) {
+    override fun visit(n: ModuleDeclaration, arg: Element) {
         super.visit(n, newJavaContext(arg, n))
     }
 
-    private fun newJavaContext(parent: Element, node: NodeWithName<*>): Element {
-        return newJavaContext(parent, node.javaClass.getSimpleName(), node.getNameAsString())
-    }
+    private fun newJavaContext(parent: Element, node: NodeWithName<*>): Element =
+        newJavaContext(parent, node.javaClass.getSimpleName(), node.nameAsString)
 
-    private fun newJavaContext(parent: Element, node: NodeWithSimpleName<*>): Element {
-        return newJavaContext(parent, node.javaClass.getSimpleName(), node.getNameAsString())
-    }
+    private fun newJavaContext(parent: Element, node: NodeWithSimpleName<*>): Element =
+        newJavaContext(parent, node.javaClass.getSimpleName(), node.nameAsString)
 
     private fun newJavaContext(parent: Element, simpleName: String, name: String): Element {
         val e = xmlDocument.createElement(simpleName)
@@ -90,24 +98,24 @@ class StatVisitor(
 
     //endregion
     //region plain text reporting
-    fun visit(n: JmlDocDeclaration, arg: Element) {
+    override fun visit(n: JmlDocDeclaration, arg: Element) {
         reportPlainText(n, arg)
     }
 
-    fun visit(n: JmlDoc?, arg: Element?) {
+    override fun visit(n: JmlDoc, arg: Element) {
     }
 
-    fun visit(n: JmlDocStmt, arg: Element) {
+    override fun visit(n: JmlDocStmt, arg: Element) {
         reportPlainText(n, arg)
     }
 
-    fun visit(n: JmlDocType, arg: Element) {
+    override fun visit(n: JmlDocType, arg: Element) {
         reportPlainText(n, arg)
     }
 
     private fun reportPlainText(n: JmlDocContainer, arg: Element) {
-        val doc: JmlDocSanitizer = JmlDocSanitizer(TreeSet<E>(keys))
-        val san: String = doc.asString(n.getJmlComments(), false)
+        val doc = JmlDocSanitizer(keys.toSet())
+        val san: String = doc.asString(n.jmlComments, false)
         val newlines = newlines(san)
         val e = xmlDocument.createElement("jml-comment")
         arg.appendChild(e)
@@ -117,7 +125,7 @@ class StatVisitor(
     }
 
     //endregion
-    fun visit(n: JmlClassExprDeclaration, arg: Element) {
+    override fun visit(n: JmlClassExprDeclaration, arg: Element) {
         if (active(n)) {
             val e = newElement(arg, n.getKind().getIdentifier())
             val expr = getExpressionStat(n.getInvariant())
@@ -145,20 +153,18 @@ class StatVisitor(
         e.setAttribute("length", "" + length)
 
         val map = count(expr)
-        map.forEach(BiConsumer<Class<*>, Int> { k: Class<*>, v: Int -> e.setAttribute(k.simpleName, "" + v) })
+        map.forEach { k, v -> e.setAttribute(k.simpleName, "" + v) }
         return e
     }
 
-    private fun lengthOf(expr: Expression): Int {
-        return expr.toString().length()
-    }
+    private fun lengthOf(expr: Expression): Int = expr.toString().length
 
     private fun numberOfVariables(expr: Expression): Int {
         var sum = 0
-        for (childNode in expr.getChildNodes()) {
+        for (childNode in expr.childNodes) {
             if (childNode is NameExpr) sum++
             else if (childNode is Expression && !childNode.getChildNodes().isEmpty()) {
-                sum += numberOfVariables(childNode as Expression)
+                sum += numberOfVariables(childNode)
             }
         }
         return sum
@@ -170,12 +176,10 @@ class StatVisitor(
         return e
     }
 
-    private fun active(n: NodeWithJmlTags<*>): Boolean {
-        return equal(keys, n.getJmlTags())
-    }
+    private fun active(n: NodeWithJmlTags<*>): Boolean = equal(keys, n.jmlTags)
 
 
-    fun visit(n: JmlRepresentsDeclaration, arg: Element) {
+    override fun visit(n: JmlRepresentsDeclaration, arg: Element) {
         if (active(n)) {
             val a = newElement(arg, "represents")
             a.setAttribute("name", n.getNameAsString())
@@ -183,7 +187,7 @@ class StatVisitor(
         }
     }
 
-    fun visit(n: JmlMethodDeclaration, arg: Element) {
+    override fun visit(n: JmlMethodDeclaration, arg: Element) {
         var arg = arg
         if (active(n)) {
             arg = newJavaContext(arg, n.javaClass.getSimpleName(), n.getMethodDeclaration().getNameAsString())
@@ -193,7 +197,7 @@ class StatVisitor(
     }
 
 
-    fun visit(n: JmlContract, arg: Element) {
+    override fun visit(n: JmlContract, arg: Element) {
         if (active(n)) {
             var name = "contract_" + n.getRange().get().begin.line
             if (n.getName().isPresent()) {
@@ -207,32 +211,32 @@ class StatVisitor(
         }
     }
 
-    fun visit(n: JmlExpressionStmt, arg: Element) {
+    override fun visit(n: JmlExpressionStmt, arg: Element) {
         if (active(n)) {
-            val e = newElement(arg, n.getKind().jmlSymbol())
-            e.appendChild(getExpressionStat(n.getExpression()))
+            val e = newElement(arg, n.kind.jmlSymbol())
+            e.appendChild(getExpressionStat(n.expression))
         }
     }
 
-    fun visit(n: JmlUnreachableStmt, arg: Element) {
+    override fun visit(n: JmlUnreachableStmt, arg: Element) {
         if (active(n)) {
             val e = newElement(arg, "jml-unreachable")
         }
     }
 
-    fun visit(n: JmlBeginStmt, arg: Element) {
+    override fun visit(n: JmlBeginStmt, arg: Element) {
         if (active(n)) {
             newElement(arg, "jml-begin")
         }
     }
 
-    fun visit(n: JmlEndStmt, arg: Element) {
+    override fun visit(n: JmlEndStmt, arg: Element) {
         if (active(n)) {
             newElement(arg, "jml-end")
         }
     }
 
-    fun visit(n: JmlGhostStmt, arg: Element) {
+    override fun visit(n: JmlGhostStmt, arg: Element) {
         if (active(n)) {
             val e = newElement(arg, "jml-ghost")
             e.setAttribute("statements", "")
@@ -241,77 +245,77 @@ class StatVisitor(
     }
 
 
-    fun visit(n: JmlLabelStmt, arg: Element) {
+    override fun visit(n: JmlLabelStmt, arg: Element) {
         if (active(n)) {
             newElement(arg, "jml-label")
         }
     }
 
-    fun visit(n: JmlSimpleExprClause, arg: Element) {
+    override fun visit(n: JmlSimpleExprClause, arg: Element) {
         val e = newElement(arg, n.getKind().jmlSymbol)
         e.appendChild(getExpressionStat(n.getExpression()))
     }
 
-    fun visit(n: JmlSignalsClause, arg: Element) {
+    override fun visit(n: JmlSignalsClause, arg: Element) {
         newElement(arg, n.getKind().jmlSymbol)
     }
 
-    fun visit(n: JmlSignalsOnlyClause, arg: Element) {
+    override fun visit(n: JmlSignalsOnlyClause, arg: Element) {
         val e = newElement(arg, n.getKind().jmlSymbol)
-        e.setAttribute("numOfTypes", "" + n.getTypes().size())
+        e.setAttribute("numOfTypes", "" + n.getTypes().size)
     }
 
-    fun visit(n: JmlOldClause, arg: Element) {
+    override fun visit(n: JmlOldClause, arg: Element) {
         val e = newElement(arg, n.getKind().jmlSymbol)
-        e.setAttribute("numOfDecls", "" + n.getDeclarations().getVariables().size())
+        e.setAttribute("numOfDecls", "" + n.getDeclarations().getVariables().size)
     }
 
-    fun visit(n: JmlAccessibleClause?, arg: Element?) {
+    override fun visit(n: JmlAccessibleClause, arg: Element) {
         super.visit(n, arg)
     }
 
-    fun visit(n: JmlMultiExprClause, arg: Element) {
+    override fun visit(n: JmlMultiExprClause, arg: Element) {
         val e = newElement(arg, n.getKind().jmlSymbol)
         for (expression in n.getExpressions()) {
             e.appendChild(getExpressionStat(expression))
         }
     }
 
-    fun visit(n: JmlCallableClause, arg: Element) {
+    override fun visit(n: JmlCallableClause, arg: Element) {
         val e = newElement(arg, n.getKind().jmlSymbol)
     }
 
-    fun visit(n: JmlCapturesClause, arg: Element) {
+    override fun visit(n: JmlCapturesClause, arg: Element) {
         val e = newElement(arg, n.getKind().jmlSymbol)
     }
 
-    fun visit(n: JmlForallClause, arg: Element) {
+    override fun visit(n: JmlForallClause, arg: Element) {
         val e = newElement(arg, n.getKind().jmlSymbol)
-        e.setAttribute("numVars", "" + n.getBoundedVariables().size())
+        e.setAttribute("numVars", "" + n.getBoundedVariables().size)
     }
 
-    fun visit(n: JmlRefiningStmt, arg: Element) {
+    override fun visit(n: JmlRefiningStmt, arg: Element) {
         if (active(n)) {
             val e = newElement(arg, "jml-refining")
         }
     }
 
-    fun visit(n: JmlClauseIf?, arg: Element?) {
+    override fun visit(n: JmlClauseIf, arg: Element) {
         super.visit(n, arg)
     }
 
-    fun visit(n: JmlFieldDeclaration, arg: Element?) {
-        update(n, this::update)
+    override fun visit(n: JmlFieldDeclaration, arg: Element) {
+        //update(n, this::update)
     }
 
     interface Update<R> {
-        fun fn(parent: Element?, node: R)
+        fun fn(parent: Element, node: R)
     }
 
-    fun <R : NodeWithJmlTags<*>?> update(n: R, update: Update<R>?) {
+    private fun <R : NodeWithJmlTags<*>> update(n: R, update: Update<R>) {
     }
 
-    private fun update(parent: Element, n: JmlFieldDeclaration) {
+    private fun update(parent: JmlFieldDeclaration, n: JmlFieldDeclaration) {
         /*if (n.getDecl().hasModifier(Modifier.DefaultKeyword.JML_GHOST)) {
             getClassStat(stat, n).addNumOfGhostFields(1);
         } else if (n.getDecl().hasModifier(Modifier.DefaultKeyword.JML_MODEL)) {
@@ -328,10 +332,8 @@ class StatVisitor(
 
         while (!q.isEmpty()) {
             val n: Node = q.pop()
-            occCounter.compute(
-                n.javaClass,
-                BiFunction<Class<*>, Int, Int> { k: Class<*>?, i: Int? -> if (i == null) 1 else i + 1 })
-            for (childNode in n.getChildNodes()) {
+            occCounter.compute(n.javaClass) { k: Class<*>, i: Int? -> i?.let { it + 1 } ?: 1 }
+            for (childNode in n.childNodes) {
                 if (childNode is Expression) {
                     q.add(childNode)
                 }
@@ -354,12 +356,12 @@ class StatVisitor(
 
 
         private fun equal(keySet: List<String>, jmlTags: NodeList<SimpleName>): Boolean {
-            if (keySet.size != jmlTags.size()) {
+            if (keySet.size != jmlTags.size) {
                 return false
             }
 
             for (i in keySet.indices) {
-                if (keySet[i] != jmlTags.get(i).getIdentifier()) {
+                if (keySet[i] != jmlTags.get(i).identifier) {
                     return false
                 }
             }
@@ -368,122 +370,75 @@ class StatVisitor(
     }
 }
 
-internal class ExpressionComplexity : GenericVisitorAdapter<Int?, ExpressionCosts?>() {
-    fun visit(n: ArrayAccessExpr?, arg: ExpressionCosts?): Int {
-        return super.visit(n, arg)
-    }
+internal class ExpressionComplexity : GenericVisitorAdapter<Int, ExpressionCosts>() {
+    override fun visit(n: ArrayAccessExpr, arg: ExpressionCosts): Int = super.visit(n, arg)
 
-    fun visit(n: ArrayCreationExpr?, arg: ExpressionCosts?): Int {
-        return super.visit(n, arg)
-    }
+    override fun visit(n: ArrayCreationExpr, arg: ExpressionCosts): Int = super.visit(n, arg)
 
-    fun visit(n: ArrayInitializerExpr?, arg: ExpressionCosts?): Int {
-        return super.visit(n, arg)
-    }
+    override fun visit(n: ArrayInitializerExpr, arg: ExpressionCosts): Int = super.visit(n, arg)
 
-    fun visit(n: AssignExpr, arg: ExpressionCosts): Int {
-        return arg.getAssign() + n.getTarget().accept(this, arg) + n.getValue().accept(this, arg)
-    }
+    override fun visit(n: AssignExpr, arg: ExpressionCosts): Int =
+        arg.assign + n.target.accept(this, arg) + n.value.accept(this, arg)
 
-    fun visit(n: BinaryExpr, arg: ExpressionCosts): Int {
+    override fun visit(n: BinaryExpr, arg: ExpressionCosts): Int =
         //TODO distinguish by operator
-        return arg.getMinus() + n.getLeft().accept(this, arg) + n.getRight().accept(this, arg)
-    }
+        arg.minus + n.left.accept(this, arg) + n.right.accept(this, arg)
 
-    fun visit(n: UnaryExpr?, arg: ExpressionCosts?): Int {
-        return super.visit(n, arg)
-    }
+    override fun visit(n: UnaryExpr, arg: ExpressionCosts): Int = super.visit(n, arg)
 
-    fun visit(n: LambdaExpr?, arg: ExpressionCosts?): Int {
-        return super.visit(n, arg)
-    }
+    override fun visit(n: LambdaExpr, arg: ExpressionCosts): Int = super.visit(n, arg)
 
-    fun visit(n: CastExpr, arg: ExpressionCosts): Int {
-        return arg.getCast() + n.getExpression().accept(this, arg)
-    }
+    override fun visit(n: CastExpr, arg: ExpressionCosts): Int = arg.cast + n.expression.accept(this, arg)
 
-    fun visit(n: CharLiteralExpr?, arg: ExpressionCosts): Int {
-        return arg.getCharLiteral()
-    }
+    override fun visit(n: CharLiteralExpr, arg: ExpressionCosts): Int = arg.charLiteral
 
-    fun visit(n: ConditionalExpr, arg: ExpressionCosts): Int {
-        return arg.getConditional() + n.getCondition().accept(this, arg) + n.getThenExpr()
-            .accept(this, arg) + n.getElseExpr().accept(
+    override fun visit(n: ConditionalExpr, arg: ExpressionCosts): Int {
+        return arg.conditional + n.condition.accept(this, arg) + n.thenExpr
+            .accept(this, arg) + n.elseExpr.accept(
             this, arg
         )
     }
 
-    fun visit(n: EnclosedExpr, arg: ExpressionCosts?): Int {
-        return n.getInner().accept(this, arg)
-    }
+    override fun visit(n: EnclosedExpr, arg: ExpressionCosts): Int = n.inner.accept(this, arg)
 
-    fun visit(n: IntegerLiteralExpr?, arg: ExpressionCosts): Int {
-        return arg.getIntegerLiteral()
-    }
+    override fun visit(n: IntegerLiteralExpr, arg: ExpressionCosts): Int = arg.integerLiteral
 
-    fun visit(n: LongLiteralExpr?, arg: ExpressionCosts): Int {
-        return arg.getLongLiteral()
-    }
+    override fun visit(n: LongLiteralExpr, arg: ExpressionCosts): Int = arg.longLiteral
 
-    fun visit(n: MethodCallExpr, arg: ExpressionCosts): Int {
-        return arg.getMethodCall() + sum(n.getArguments(), arg)
-    }
+    override fun visit(n: MethodCallExpr, arg: ExpressionCosts): Int = arg.methodCall + sum(n.arguments, arg)
 
-    fun visit(n: NameExpr?, arg: ExpressionCosts): Int {
-        return arg.getName()
-    }
+    override fun visit(n: NameExpr, arg: ExpressionCosts): Int = arg.name
 
-    fun visit(n: NullLiteralExpr?, arg: ExpressionCosts): Int {
-        return arg.getNullLiteral()
-    }
+    override fun visit(n: NullLiteralExpr, arg: ExpressionCosts): Int = arg.nullLiteral
 
-    fun visit(n: JmlQuantifiedExpr, arg: ExpressionCosts): Int {
-        return arg.getQuantor() + n.getVariables().size() * arg.getBinderCostsPerVariable() + sum(
-            n.getExpressions(),
-            arg
-        )
-    }
+    override fun visit(n: JmlQuantifiedExpr, arg: ExpressionCosts): Int =
+        arg.quantor + n.variables.size * arg.binderCostsPerVariable + sum(n.expressions, arg)
 
     private fun sum(n: NodeList<Expression>, arg: ExpressionCosts): Int {
         return n.stream().mapToInt { it -> Objects.requireNonNull(it.accept(this, arg), it.javaClass.getSimpleName()) }
             .sum()
     }
 
-    fun visit(n: JmlTypeExpr?, arg: ExpressionCosts?): Int {
-        return 1
-    }
+    override fun visit(n: JmlTypeExpr, arg: ExpressionCosts): Int = 1
 
-    fun visit(n: SuperExpr?, arg: ExpressionCosts?): Int {
-        return 0
-    }
+    override fun visit(n: SuperExpr, arg: ExpressionCosts): Int = 0
 
-    fun visit(n: SwitchExpr, arg: ExpressionCosts): Int {
-        return n.getSelector().accept(this, arg) + n.getEntries().stream()
-            .mapToInt { it -> sum(it.getLabels(), arg) + 1 }
+    override fun visit(n: SwitchExpr, arg: ExpressionCosts): Int {
+        return n.selector.accept(this, arg) + n.entries.stream()
+            .mapToInt { it -> sum(it.labels, arg) + 1 }
             .sum()
     }
 
-    fun visit(n: PatternExpr?, arg: ExpressionCosts?): Int {
-        return 0
-    }
+    override fun visit(n: PatternExpr, arg: ExpressionCosts): Int = 0
 
-    fun visit(n: BooleanLiteralExpr?, arg: ExpressionCosts?): Int {
-        return 0
-    }
+    override fun visit(n: BooleanLiteralExpr, arg: ExpressionCosts): Int = 0
 
-    fun visit(n: InstanceOfExpr, arg: ExpressionCosts): Int {
-        return arg.get_instanceof() + n.getExpression().accept(this, arg)
-    }
+    override fun visit(n: InstanceOfExpr, arg: ExpressionCosts): Int = arg.instanceof + n.expression.accept(this, arg)
 
-    fun visit(n: JmlLabelExpr?, arg: ExpressionCosts?): Int {
-        return super.visit(n, arg)
-    }
+    override fun visit(n: JmlLabelExpr, arg: ExpressionCosts): Int = super.visit(n, arg)
 
-    fun visit(n: JmlLetExpr, arg: ExpressionCosts): Int {
-        return arg.getLet() + arg.getBinderCostsPerVariable() * n.getVariables().getVariables().size()
-    }
+    override fun visit(n: JmlLetExpr, arg: ExpressionCosts): Int =
+        arg.let + arg.binderCostsPerVariable * n.variables.variables.size
 
-    fun visit(n: JmlMultiCompareExpr, arg: ExpressionCosts): Int {
-        return arg.getCompare() * n.getOperators().size()
-    }
+    override fun visit(n: JmlMultiCompareExpr, arg: ExpressionCosts): Int = arg.compare * n.operators.size
 }

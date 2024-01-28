@@ -1,6 +1,8 @@
 package io.github.jmltoolkit.smt.solver
 
-import com.github.jmlparser.smt.model.SAtom
+import io.github.jmltoolkit.smt.model.SAtom
+import io.github.jmltoolkit.smt.model.SExpr
+import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.function.Consumer
 
@@ -8,14 +10,8 @@ import java.util.function.Consumer
  * @author Alexander Weigl
  * @version 1 (08.08.22)
  */
-class SolverAnswer(answers: List<SExpr?>?) {
-    private val answers: List<SExpr?>? = answers
+class SolverAnswer(private val answers: List<SExpr>) {
     private var currentPos = 0
-
-    fun getAnswers(): List<SExpr?>? {
-        return answers
-    }
-
     fun expectSat(): SolverAnswer {
         return expectSymbol("sat")
     }
@@ -36,11 +32,11 @@ class SolverAnswer(answers: List<SExpr?>?) {
     }
 
     fun isSymbol(symbol: String): Boolean {
-        return symbol == (peek() as SAtom?).getValue()
+        return symbol == (peek() as SAtom).value
     }
 
-    fun peek(): SExpr? {
-        return answers!![currentPos]
+    fun peek(): SExpr {
+        return answers[currentPos]
     }
 
     fun consume() {
@@ -49,7 +45,7 @@ class SolverAnswer(answers: List<SExpr?>?) {
 
     fun consumeErrors(): List<String> {
         val seq: MutableList<String> = ArrayList()
-        while (currentPos < answers!!.size) {
+        while (currentPos < answers.size) {
             if (isError) {
                 seq.add(errorMessage)
                 consume()
@@ -72,8 +68,8 @@ class SolverAnswer(answers: List<SExpr?>?) {
 
     override fun toString(): String {
         val sw = StringWriter()
-        val pw: PrintWriter = PrintWriter(sw)
-        answers.forEach(Consumer<SExpr> { a: SExpr ->
+        val pw = PrintWriter(sw)
+        answers.forEach(Consumer { a: SExpr ->
             a.appendTo(pw)
             pw.println()
         })

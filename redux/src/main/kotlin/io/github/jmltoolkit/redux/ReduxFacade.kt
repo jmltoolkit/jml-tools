@@ -3,7 +3,6 @@ package io.github.jmltoolkit.redux
 
 import com.github.javaparser.ast.Node
 import java.util.*
-import java.util.function.Function
 
 /**
  * @author Alexander Weigl
@@ -12,17 +11,18 @@ import java.util.function.Function
 class ReduxFacade(private val config: ReduxConfig) {
     private val transformers: MutableList<Transformer> = ArrayList()
 
-    constructor(config: ReduxConfig, transformers: List<Transformer>?) : this(config) {
-        this.transformers.addAll(transformers!!)
+    constructor(config: ReduxConfig, transformers: List<Transformer>) : this(config) {
+        this.transformers.addAll(transformers)
     }
 
-    fun apply(nodes: List<Node?>): List<Node?> {
+    fun apply(nodes: List<Node>): List<Node?> {
         val n: MutableList<Node?> = ArrayList(nodes.size)
         for (node in nodes) {
+            var new = node
             for (transformer in transformers) {
-                node = transformer.apply(node)
+                new = transformer.apply(new)
             }
-            n.add(node)
+            n.add(new)
         }
         return n
     }
@@ -30,11 +30,7 @@ class ReduxFacade(private val config: ReduxConfig) {
     companion object {
         fun create(config: ReduxConfig): ReduxFacade {
             val sl = ServiceLoader.load(Transformer::class.java)
-            return ReduxFacade(config, sl.stream()
-                .filter { it: ServiceLoader.Provider<Transformer> -> config.isEnabled(it.type().toString()) }
-                .map<Transformer>(Function<ServiceLoader.Provider<Transformer>, Transformer> { ServiceLoader.Provider.get() })
-                .toList()
-            )
+            return ReduxFacade(config, sl.filter { config.isEnabled(it.javaClass.name) })
         }
     }
 }

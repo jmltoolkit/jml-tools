@@ -5,10 +5,18 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
 dependencies {
-    implementation(libs.jcommander)
+    implementation(libs.clickt)
+    implementation(libs.jmlcore)
+    implementation(project(":wd"))
+    implementation(project(":xpath"))
+    implementation(project(":prettyprinting"))
+    implementation(project(":lint"))
+    implementation(project(":stat"))
+    implementation(project(":jml2java"))
 }
 
 testing {
