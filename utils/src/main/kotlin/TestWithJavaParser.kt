@@ -1,10 +1,11 @@
+package io.github.jmltoolkit.utils
+
 import com.github.javaparser.JavaParser
 import com.github.javaparser.ParserConfiguration
 import com.github.javaparser.Problem
 import com.github.javaparser.ast.Node
 import com.github.javaparser.symbolsolver.JavaSymbolSolver
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ClassLoaderTypeSolver
-import org.junit.jupiter.api.Assertions
 import java.util.function.Consumer
 
 /**
@@ -26,7 +27,7 @@ open class TestWithJavaParser {
             val r = parser.parse(resourceAsStream)
             if (!r.isSuccessful) {
                 r.problems.forEach(Consumer { x: Problem? -> System.err.println(x) })
-                Assertions.fail<Any>("Error during parsing")
+                error("Error during parsing")
             }
             parent = r.result.get().getType(0)
         } else {

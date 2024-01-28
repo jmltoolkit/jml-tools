@@ -46,7 +46,7 @@ kotlin {
 dependencies {
     // buildSrc in combination with this plugin ensures that the version set here
     // will be set to the same for all other Kotlin dependencies / plugins in the project.
-    //add("implementation", libs.findLibrary("kotlin-gradle").get())
+    add("implementation", libs.findLibrary("kotlin-gradle").get())
 
     // https://github.com/Kotlin/dokka
     // Dokka is a documentation engine for Kotlin like JavaDoc for Java

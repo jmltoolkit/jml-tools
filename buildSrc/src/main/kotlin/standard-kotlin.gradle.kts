@@ -11,14 +11,12 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.jmlcore)
-    testImplementation()
 }
 
 testing {
     suites {
         val test by getting(JvmTestSuite::class) {
-            useKotlinTest("1.9.20")
+            useKotlinTest()
         }
     }
 }
@@ -37,8 +35,10 @@ repositories {
 }
 
 dependencies {
-    //testImplementation(libs.jupiterengine)
-    //testImplementation(libs.jupiterparams)
+    //truth = { module = "com.google.truth:truth", version = "1.10.1" }
+    testImplementation(libs.findLibrary("truth").get())
+    testImplementation("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
 }
 
 tasks.named<Test>("test") {
@@ -51,19 +51,19 @@ tasks.named<Test>("test") {
     }
 }
 
-/*testing {
+testing {
     suites {
         val test by getting(JvmTestSuite::class) {
             //useKotlinTest("1.9.20")
-            useJUnitJupiter(libs.versions.jupiter)
+            useJUnitJupiter()
         }
     }
-}*/
+}
 
 java {
     // Auto JDK setup
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(JDK_VERSION))
+        languageVersion.set(JavaLanguageVersion.of("21"))
     }
     withSourcesJar()
     withJavadocJar()

@@ -2,14 +2,18 @@ import com.github.javaparser.GeneratedJavaParserConstants
 import com.github.javaparser.TokenRange
 import com.github.javaparser.ast.CompilationUnit
 import com.github.javaparser.ast.Node
+import com.github.javaparser.ast.jml.NodeWithJmlTags
+import com.github.javaparser.jml.JmlUtility
+import com.google.common.collect.Streams
 import com.google.common.truth.Truth
+import io.github.jmltoolkit.utils.LineColumnIndex
+import io.github.jmltoolkit.utils.TestWithJavaParser
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.function.Executable
+import org.junit.jupiter.api.TestFactory
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.function.Function
-import java.util.function.Predicate
 import java.util.stream.Stream
 
 /**
@@ -19,7 +23,7 @@ import java.util.stream.Stream
 internal class TestTokenRangesPreciseness : TestWithJavaParser() {
     @Test
     fun lineColumnIndex() {
-        val lci: LineColumnIndex = LineColumnIndex(
+        val lci = LineColumnIndex(
             """
                 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
                 nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
@@ -50,7 +54,7 @@ internal class TestTokenRangesPreciseness : TestWithJavaParser() {
         val content =
             Files.readString(
                 Paths.get(
-                    javaClass.getResource("/ihm/VerifiedIdentityHashMap.java").path
+                    javaClass.getResource("/ihm/VerifiedIdentityHashMap.java")?.path ?: error("Could not find resource")
                 )
             )
         val result = parser.parse(content)
@@ -65,7 +69,7 @@ internal class TestTokenRangesPreciseness : TestWithJavaParser() {
         val content =
             Files.readString(
                 Paths.get(
-                    javaClass.getResource("/com/github/jmlparser/TokenTest.java").path
+                    javaClass.getResource("/com/github/jmlparser/TokenTest.java")!!.path
                 )
             )
         val result = parser.parse(content)
@@ -74,30 +78,30 @@ internal class TestTokenRangesPreciseness : TestWithJavaParser() {
     }
 
     private fun testTokenRanges(node: CompilationUnit, content: String): Stream<DynamicTest> {
-        val lci: LineColumnIndex = LineColumnIndex(content)
+        val lci = LineColumnIndex(content)
         return JmlUtility.getAllNodes(node)
-            .filter(Predicate<Node> { it: Node? -> it is NodeWithJmlTags<*> })
-            .flatMap<DynamicTest>(Function<Node, Stream<out DynamicTest?>> { it: Node -> checkTokenRange(lci, it) })
+            .filter { it: Node? -> it is NodeWithJmlTags<*> }
+            .flatMap { it: Node -> checkTokenRange(lci, it) }
         //checkTokenRange(lci, node);
     }
 
     private fun checkTokenRange(lci: LineColumnIndex, it: Node): Stream<DynamicTest?> {
         val tr = it.tokenRange
-        return tr.map<Stream<DynamicTest?>> { javaTokens: TokenRange -> checkTokenRange(lci, javaTokens) }
+        return tr.map { javaTokens: TokenRange -> checkTokenRange(lci, javaTokens) }
             .orElse(Stream.empty<DynamicTest?>())
     }
 
     private fun checkTokenRange(lci: LineColumnIndex, javaTokens: TokenRange): Stream<DynamicTest?> {
         return Streams.stream(javaTokens)
-            .filter { it -> it.getKind() !== GeneratedJavaParserConstants.EOF }
+            .filter { it.kind != GeneratedJavaParserConstants.EOF }
             .map { javaToken ->
-                DynamicTest.dynamicTest(javaToken.toString(), Executable {
-                    val substring: Unit = lci.substring(javaToken.getRange().get())
-                    val text: Unit = javaToken.getText()
-                    if (!(substring.equals("@") && text.equals(" "))) {
+                DynamicTest.dynamicTest(javaToken.toString()) {
+                    val substring = lci.substring(javaToken.range.get())
+                    val text = javaToken.text
+                    if (!(substring == "@" && text == " ")) {
                         Truth.assertThat(substring).isEqualTo(text)
                     }
-                })
+                }
             }
     }
 }

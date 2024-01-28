@@ -4,12 +4,15 @@ import com.github.javaparser.ParseResult
 import com.github.javaparser.Problem
 import com.github.javaparser.ast.expr.Expression
 import com.github.javaparser.printer.DefaultPrettyPrinter
-import com.github.jmlparser.TestWithJavaParser
+import com.google.common.truth.Truth
+import io.github.jmltoolkit.jml2java.Jml2JavaFacade
+import io.github.jmltoolkit.utils.TestWithJavaParser
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.function.Executable
+import org.junit.jupiter.api.DynamicTest
+import org.junit.jupiter.api.TestFactory
+import org.yaml.snakeyaml.Yaml
 import java.io.IOException
 import java.util.function.Consumer
-import java.util.function.Function
 import java.util.stream.Stream
 
 /**
@@ -21,15 +24,15 @@ class Jml2JavaTests : TestWithJavaParser() {
     @Throws(IOException::class)
     fun j2jTranslation(): Stream<DynamicTest> {
         javaClass.getResourceAsStream("expr.yaml").use { inputStream ->
-            val yaml: Yaml = Yaml()
+            val yaml = Yaml()
             val obj: List<Map<String, Any>> = yaml.load(inputStream)
-            return obj.stream().map<DynamicTest>(Function<Map<String, Any>, DynamicTest> { m: Map<String, Any> ->
+            return obj.stream().map { m: Map<String, Any> ->
                 val a = m["expr"] as String?
                 val result = m["result"] as String?
-                DynamicTest.dynamicTest(a, Executable {
+                DynamicTest.dynamicTest(a) {
                     if (result != null) jml2JavaTranslation(a, result)
-                })
-            })
+                }
+            }
         }
     }
 
@@ -41,7 +44,7 @@ class Jml2JavaTests : TestWithJavaParser() {
         }
         val expr = e.result.get()
         expr.setParentNode(parent)
-        val actual: Unit = Jml2JavaFacade.translate(expr)
+        val actual = Jml2JavaFacade.translate(expr)
 
         val dpp = DefaultPrettyPrinter()
         val sblock = dpp.print(actual.a)
