@@ -52,11 +52,7 @@ internal class TestTokenRangesPreciseness : TestWithJavaParser() {
     @Throws(Throwable::class)
     fun ihm(): Stream<DynamicTest> {
         val content =
-            Files.readString(
-                Paths.get(
-                    javaClass.getResource("/ihm/VerifiedIdentityHashMap.java")?.path ?: error("Could not find resource")
-                )
-            )
+            Files.readString(Paths.get("../examples/ihm/VerifiedIdentityHashMap.java"))
         val result = parser.parse(content)
         Assertions.assertTrue(result.isSuccessful)
         return testTokenRanges(result.result.get(), content)
@@ -66,12 +62,7 @@ internal class TestTokenRangesPreciseness : TestWithJavaParser() {
     @TestFactory
     @Throws(Throwable::class)
     fun test(): Stream<DynamicTest> {
-        val content =
-            Files.readString(
-                Paths.get(
-                    javaClass.getResource("/com/github/jmlparser/TokenTest.java")!!.path
-                )
-            )
+        val content = Files.readString(Paths.get("src/test/kotlin/TokenTest.java"))
         val result = parser.parse(content)
         Assertions.assertTrue(result.isSuccessful)
         return testTokenRanges(result.result.get(), content)

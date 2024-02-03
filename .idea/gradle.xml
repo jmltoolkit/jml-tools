@@ -25,6 +25,7 @@
             <option value="$PROJECT_DIR$/cli" />
             <option value="$PROJECT_DIR$/jml2java" />
             <option value="$PROJECT_DIR$/lint" />
+            <option value="$PROJECT_DIR$/lsp" />
             <option value="$PROJECT_DIR$/prettyprinting" />
             <option value="$PROJECT_DIR$/redux" />
             <option value="$PROJECT_DIR$/smt" />

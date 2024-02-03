@@ -31,10 +31,10 @@ class Solver {
         val p = startSmtSolver()
         try {
             PrintWriter(p.outputStream).use { out ->
-                InputStreamReader(p.inputStream).use { `in` ->
+                InputStreamReader(p.inputStream).use {
                     query.appendTo(out)
                     out.close()
-                    return SolverAnswer(SExprParser.parseAll(`in`))
+                    return SolverAnswer(SExprParser.parseAll(it))
                 }
             }
         } finally {

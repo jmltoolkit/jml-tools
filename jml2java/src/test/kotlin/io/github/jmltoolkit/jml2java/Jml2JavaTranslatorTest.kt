@@ -1,8 +1,7 @@
-package jml2java
+package io.github.jmltoolkit.jml2java
 
 import com.github.javaparser.ast.jml.expr.JmlQuantifiedExpr
 import com.google.common.truth.Truth
-import io.github.jmltoolkit.jml2java.Jml2JavaTranslator
 import org.junit.jupiter.api.Test
 
 /**

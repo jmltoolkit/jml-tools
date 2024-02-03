@@ -22,12 +22,13 @@ object SExprParser {
 
     @Throws(IOException::class)
     fun parse(reader: PushbackReader): SExpr? {
+        val eof = (-1).toChar().code
         var c = peekChar(reader)
-        if (c == -1) // end of input
+        if (c == eof) // end of input
             return null
         else if (c == '('.code) {
             consumeChar(reader) // consume '('
-            val seq: ArrayList<SExpr> = ArrayList<SExpr>()
+            val seq = arrayListOf<SExpr>()
             do {
                 c = peekChar(reader)
                 if (c == ')'.code) {
@@ -70,7 +71,7 @@ object SExprParser {
     @Throws(IOException::class)
     private fun peekChar(reader: PushbackReader): Int {
         consumeEmptiness(reader)
-        val c: Int = reader.read()
+        val c = reader.read()
         reader.unread(c)
         return c
     }

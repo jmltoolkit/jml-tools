@@ -1,8 +1,7 @@
-package com.github.jmlparser.xpath;
+package io.github.jmltoolkit.xpath
 
-import com.github.javaparser.metamodel.PropertyMetaModel;
-import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.*;
+import com.github.javaparser.metamodel.PropertyMetaModel
+import org.w3c.dom.*
 
 /**
  * Wraps a class attribute into the XML world.
@@ -10,234 +9,114 @@ import org.w3c.dom.*;
  * @author Alexander Weigl
  * @version 1 (30.11.22)
  */
-class JPAttr implements Attr {
-    final PropertyMetaModel attr;
-    final JPElement parent;
+internal class JPAttr(element: JPElement, metaModel: PropertyMetaModel) : Attr {
+    private val attr: PropertyMetaModel = metaModel
+    private val parent: JPElement = element
 
-    public JPAttr(JPElement element, PropertyMetaModel metaModel) {
-        this.parent = element;
-        this.attr = metaModel;
+    override fun getName(): String = attr.name
+
+    override fun getSpecified(): Boolean = true
+
+    override fun getValue(): String = attr.getValue(parent.astNode).toString()
+
+    @Throws(DOMException::class)
+    override fun setValue(value: String) {
+        throw DOMException(0.toShort(), "read-only")
     }
 
-    @Override
-    public String getName() {
-        return attr.getName();
+    override fun getOwnerElement(): Element = parent
+
+    override fun getSchemaTypeInfo(): TypeInfo? = null
+
+    override fun isId(): Boolean = false
+
+    override fun getNodeName(): String = name
+
+    @Throws(DOMException::class)
+    override fun getNodeValue(): String = attr.getValue(parent.astNode).toString()
+
+    @Throws(DOMException::class)
+    override fun setNodeValue(nodeValue: String) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "")
     }
 
-    @Override
-    public boolean getSpecified() {
-        return true;
+    override fun getNodeType(): Short = 0
+
+    override fun getParentNode(): Node? = null
+
+    override fun getChildNodes(): NodeList = DocumentFactories.wrap()
+
+    override fun getFirstChild(): Node? = null
+
+    override fun getLastChild(): Node? = null
+
+    override fun getPreviousSibling(): Node? = null
+
+    override fun getNextSibling(): Node? = null
+
+    override fun getAttributes(): NamedNodeMap? = null
+
+    override fun getOwnerDocument(): Document? = null
+
+    @Throws(DOMException::class)
+    override fun insertBefore(newChild: Node, refChild: Node): Node? = null
+
+    @Throws(DOMException::class)
+    override fun replaceChild(newChild: Node, oldChild: Node): Node? = null
+
+    @Throws(DOMException::class)
+    override fun removeChild(oldChild: Node): Node? = null
+
+    @Throws(DOMException::class)
+    override fun appendChild(newChild: Node): Node? = null
+
+    override fun hasChildNodes(): Boolean = false
+
+    override fun cloneNode(deep: Boolean): Node? = null
+
+    override fun normalize() {
     }
 
-    @Override
-    public String getValue() {
-        return attr.getValue(parent.astNode).toString();
+    override fun isSupported(feature: String, version: String): Boolean = false
+
+    override fun getNamespaceURI(): String? = null
+
+    override fun getPrefix(): String? = null
+
+    @Throws(DOMException::class)
+    override fun setPrefix(prefix: String) {
     }
 
-    @Override
-    public void setValue(String value) throws DOMException {
-        throw new DOMException((short) 0, "read-only");
+    override fun getLocalName(): String? = null
+
+    override fun hasAttributes(): Boolean = false
+
+    override fun getBaseURI(): String? = null
+
+    @Throws(DOMException::class)
+    override fun compareDocumentPosition(other: Node): Short = 0
+
+    @Throws(DOMException::class)
+    override fun getTextContent(): String = value
+
+    @Throws(DOMException::class)
+    override fun setTextContent(textContent: String) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "")
     }
 
-    @Override
-    public Element getOwnerElement() {
-        return parent;
-    }
+    override fun isSameNode(other: Node): Boolean = false
 
-    @Override
-    public TypeInfo getSchemaTypeInfo() {
-        return null;
-    }
+    override fun lookupPrefix(namespaceURI: String): String? = null
 
-    @Override
-    public boolean isId() {
-        return false;
-    }
+    override fun isDefaultNamespace(namespaceURI: String): Boolean = false
 
-    @NotNull
-    @Override
-    public String getNodeName() {
-        return getName();
-    }
+    override fun lookupNamespaceURI(prefix: String): String? = null
 
-    @Override
-    public String getNodeValue() throws DOMException {
-        return attr.getValue(parent.astNode).toString();
-    }
+    override fun isEqualNode(arg: Node): Boolean = false
 
-    @Override
-    public void setNodeValue(String nodeValue) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "");
-    }
+    override fun getFeature(feature: String, version: String): Any? = null
 
-    @Override
-    public short getNodeType() {
-        return 0;
-    }
+    override fun setUserData(key: String, data: Any, handler: UserDataHandler): Any? = null
 
-    @Override
-    public Node getParentNode() {
-        return null;
-    }
-
-    @NotNull
-    @Override
-    public NodeList getChildNodes() {
-        return DocumentFactories.wrap();
-    }
-
-    @Override
-    public Node getFirstChild() {
-        return null;
-    }
-
-    @Override
-    public Node getLastChild() {
-        return null;
-    }
-
-    @Override
-    public Node getPreviousSibling() {
-        return null;
-    }
-
-    @Override
-    public Node getNextSibling() {
-        return null;
-    }
-
-    @Override
-    public NamedNodeMap getAttributes() {
-        return null;
-    }
-
-    @Override
-    public Document getOwnerDocument() {
-        return null;
-    }
-
-    @Override
-    public Node insertBefore(Node newChild, Node refChild) throws DOMException {
-        return null;
-    }
-
-    @Override
-    public Node replaceChild(Node newChild, Node oldChild) throws DOMException {
-        return null;
-    }
-
-    @Override
-    public Node removeChild(Node oldChild) throws DOMException {
-        return null;
-    }
-
-    @Override
-    public Node appendChild(Node newChild) throws DOMException {
-        return null;
-    }
-
-    @Override
-    public boolean hasChildNodes() {
-        return false;
-    }
-
-    @Override
-    public Node cloneNode(boolean deep) {
-        return null;
-    }
-
-    @Override
-    public void normalize() {
-
-    }
-
-    @Override
-    public boolean isSupported(String feature, String version) {
-        return false;
-    }
-
-    @Override
-    public String getNamespaceURI() {
-        return null;
-    }
-
-    @Override
-    public String getPrefix() {
-        return null;
-    }
-
-    @Override
-    public void setPrefix(String prefix) throws DOMException {
-
-    }
-
-    @Override
-    public String getLocalName() {
-        return null;
-    }
-
-    @Override
-    public boolean hasAttributes() {
-        return false;
-    }
-
-    @Override
-    public String getBaseURI() {
-        return null;
-    }
-
-    @Override
-    public short compareDocumentPosition(Node other) throws DOMException {
-        return 0;
-    }
-
-    @Override
-    public String getTextContent() throws DOMException {
-        return getValue();
-    }
-
-    @Override
-    public void setTextContent(String textContent) throws DOMException {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "");
-    }
-
-    @Override
-    public boolean isSameNode(Node other) {
-        return false;
-    }
-
-    @Override
-    public String lookupPrefix(String namespaceURI) {
-        return null;
-    }
-
-    @Override
-    public boolean isDefaultNamespace(String namespaceURI) {
-        return false;
-    }
-
-    @Override
-    public String lookupNamespaceURI(String prefix) {
-        return null;
-    }
-
-    @Override
-    public boolean isEqualNode(Node arg) {
-        return false;
-    }
-
-    @Override
-    public Object getFeature(String feature, String version) {
-        return null;
-    }
-
-    @Override
-    public Object setUserData(String key, Object data, UserDataHandler handler) {
-        return null;
-    }
-
-    @Override
-    public Object getUserData(String key) {
-        return null;
-    }
+    override fun getUserData(key: String): Any? = null
 }

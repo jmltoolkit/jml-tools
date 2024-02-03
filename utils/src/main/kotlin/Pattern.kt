@@ -9,7 +9,7 @@ import java.util.*
  * @version 1 (11.10.22)
  */
 class Pattern<T : Node?>(private val pattern: T) {
-    private val placeholders: MutableMap<Node, String> = IdentityHashMap<Node, String>()
+    private val placeholders: MutableMap<Node, String> = IdentityHashMap()
     fun match(tree: Node?): Map<String, Node>? {
         return match(pattern, tree, HashMap<String, Node>())
     }
@@ -35,21 +35,21 @@ class Pattern<T : Node?>(private val pattern: T) {
             return map
         }
 
-        if (pattern.javaClass !== tree?.javaClass) return null
+        if (pattern.javaClass !== tree.javaClass) return null
 
 
-        for (prop in pattern.getMetaModel().getAllPropertyMetaModels()) {
+        for (prop in pattern.metaModel.allPropertyMetaModels) {
             val childPattern = prop.getValue(pattern)
             val childTree = prop.getValue(tree)
 
-            if (prop.isNode()) {
-                rmap = match(childPattern as Node, childTree as Node, map)
+            if (prop.isNode) {
+                rmap = match(childPattern as Node?, childTree as Node?, map)
                 if (rmap == null)
                     return null
-            } else if (prop.isNodeList()) {
+            } else if (prop.isNodeList) {
                 val a = childPattern as NodeList<out Node?>
                 val b = childTree as NodeList<out Node?>
-                if (a.size !== b.size) return null
+                if (a.size != b.size) return null
 
                 for (i in 0 until a.size) {
                     rmap = match(a[i], b[i], map)

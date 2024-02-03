@@ -12,14 +12,8 @@ import kotlin.Exception
  * @author Alexander Weigl
  * @version 1 (12/29/21)
  */
-class JmlLintingFacade(config: JmlLintingConfig) {
-    private val linters: List<LintRule>
-    private val config: JmlLintingConfig
-
-    init {
-        linters = getLinter(config)
-        this.config = config
-    }
+class JmlLintingFacade(private val config: JmlLintingConfig) {
+    val linters: List<LintRule> = getLinter(config)
 
     private val sarifTool: Tool
         get() = Tool().withDriver(
@@ -64,7 +58,7 @@ class JmlLintingFacade(config: JmlLintingConfig) {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(JmlLintingFacade::class.java)
-        private val VERSION: String = JmlLintingFacade::class.java.getPackage().implementationVersion
+        private val VERSION: String = JmlLintingFacade::class.java.getPackage().implementationVersion ?: "n/a"
         private const val NAME = "JML-lint"
 
         private fun getLinter(config: JmlLintingConfig): List<LintRule> {

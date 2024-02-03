@@ -6,4 +6,5 @@ plugins {
 dependencies {
     api(project(":utils"))
     testImplementation(libs.snakeyaml)
+    testImplementation(kotlin("serialization"))
 }

@@ -47,8 +47,11 @@ object SmtTermFactory {
         arg3: SExpr
     ): SExpr = SList(smtType, javaType, listOf(symbol(fn), arg1, arg2, arg3))
 
-    private fun fnApply(javaType: ResolvedType?, smtType: SmtType, fn: String, args: List<SExpr>): SExpr =
-        list(javaType, smtType, symbol(fn), args)
+    private fun fnApply(javaType: ResolvedType?, smtType: SmtType, fn: String, args: List<SExpr>): SExpr {
+        val nargs = mutableListOf<SExpr>(symbol(fn))
+        nargs.addAll(args)
+        return SList(smtType, javaType, nargs)
+    }
 
     fun symbol(fn: String): SAtom = symbolAndValueCache.get(fn) { SAtom(SmtType.SYMBOL, null, fn) }
 

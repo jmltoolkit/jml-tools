@@ -1,149 +1,97 @@
-package com.github.jmlparser.xpath;
+package io.github.jmltoolkit.xpath
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.metamodel.PropertyMetaModel;
-import org.w3c.dom.*;
-
-import java.util.List;
-import java.util.ServiceLoader;
+import com.github.javaparser.ast.CompilationUnit
+import com.github.javaparser.ast.Node
+import com.github.javaparser.metamodel.PropertyMetaModel
+import org.w3c.dom.*
+import java.util.*
 
 /**
  * @author Alexander Weigl
  * @version 1 (30.11.22)
  */
-public class DocumentFactories {
-    private static List<PseudoAttributeProvider> providerList = null;
+object DocumentFactories {
+    val attributeProviders by lazy {
+        ServiceLoader.load(PseudoAttributeProvider::class.java).toList()
+    }
 
-    public static List<PseudoAttributeProvider> getAttributeProviders() {
-        if (providerList == null) {
-            var sl = ServiceLoader.load(PseudoAttributeProvider.class);
-            return providerList = sl.stream().map(ServiceLoader.Provider::get).toList();
+    fun isNodeProperty(mm: PropertyMetaModel): Boolean = mm.isNode || mm.isNodeList
+
+    fun getDocument(node: CompilationUnit): Document = JPDocument(node)
+
+    fun getElement(it: Node, parent: Element): JPElement = JPElement(it, parent)
+
+
+    fun <T : org.w3c.dom.Node> wrap(list: List<T>): NodeList {
+        return object : NodeList {
+            override fun item(index: Int): org.w3c.dom.Node = list[index]
+
+            override fun getLength(): Int = list.size
         }
-        return providerList;
     }
 
-    public static boolean isNodeProperty(PropertyMetaModel mm) {
-        return mm.isNode() || mm.isNodeList();
+    fun wrap(vararg seq: Element): NodeList = wrap(listOf(*seq))
+
+    fun emptyNodeMap(): NamedNodeMap {
+        return object : NamedNodeMap {
+            override fun getNamedItem(name: String): org.w3c.dom.Node? = null
+
+            @Throws(DOMException::class)
+            override fun setNamedItem(arg: org.w3c.dom.Node): org.w3c.dom.Node? = null
+
+            @Throws(DOMException::class)
+            override fun removeNamedItem(name: String): org.w3c.dom.Node? = null
+
+            override fun item(index: Int): org.w3c.dom.Node? = null
+
+            override fun getLength(): Int = 0
+
+            @Throws(DOMException::class)
+            override fun getNamedItemNS(namespaceURI: String, localName: String): org.w3c.dom.Node? = null
+
+            @Throws(DOMException::class)
+            override fun setNamedItemNS(arg: org.w3c.dom.Node): org.w3c.dom.Node? = null
+
+            @Throws(DOMException::class)
+            override fun removeNamedItemNS(namespaceURI: String, localName: String): org.w3c.dom.Node? = null
+        }
     }
 
-    public static Document getDocument(CompilationUnit node) {
-        return new JPDocument(node);
-    }
+    fun getAttribute(jpElement: JPElement, it: PropertyMetaModel): Attr = JPAttr(jpElement, it)
 
-    public static JPElement getElement(com.github.javaparser.ast.Node it, Element parent) {
-        return new JPElement(it, parent);
-    }
+    fun nodeMap(jpElement: JPElement): NamedNodeMap {
+        return object : NamedNodeMap {
+            override fun getNamedItem(name: String) =
+                jpElement.attributes.firstOrNull { it.name.equals(name) }
 
-
-    public static <T extends Node> NodeList wrap(List<T> list) {
-        return new NodeList() {
-            @Override
-            public Node item(int index) {
-                return list.get(index);
+            @Throws(DOMException::class)
+            override fun setNamedItem(arg: org.w3c.dom.Node): org.w3c.dom.Node {
+                throw DOMException(DOMException.NOT_SUPPORTED_ERR, "")
             }
 
-            @Override
-            public int getLength() {
-                return list.size();
-            }
-        };
-    }
-
-    public static NodeList wrap(Element... seq) {
-        return wrap(List.of(seq));
-    }
-
-    public static NamedNodeMap emptyNodeMap() {
-        return new NamedNodeMap() {
-            @Override
-            public Node getNamedItem(String name) {
-                return null;
+            @Throws(DOMException::class)
+            override fun removeNamedItem(name: String): org.w3c.dom.Node {
+                throw DOMException(DOMException.NOT_SUPPORTED_ERR, "")
             }
 
-            @Override
-            public Node setNamedItem(Node arg) throws DOMException {
-                return null;
+            override fun item(index: Int): org.w3c.dom.Node = jpElement.attributes[index]
+
+            override fun getLength(): Int = jpElement.attributes.size
+
+            @Throws(DOMException::class)
+            override fun getNamedItemNS(namespaceURI: String, localName: String): org.w3c.dom.Node {
+                throw DOMException(DOMException.NOT_SUPPORTED_ERR, "")
             }
 
-            @Override
-            public Node removeNamedItem(String name) throws DOMException {
-                return null;
+            @Throws(DOMException::class)
+            override fun setNamedItemNS(arg: org.w3c.dom.Node): org.w3c.dom.Node {
+                throw DOMException(DOMException.NOT_SUPPORTED_ERR, "")
             }
 
-            @Override
-            public Node item(int index) {
-                return null;
+            @Throws(DOMException::class)
+            override fun removeNamedItemNS(namespaceURI: String, localName: String): org.w3c.dom.Node {
+                throw DOMException(DOMException.NOT_SUPPORTED_ERR, "")
             }
-
-            @Override
-            public int getLength() {
-                return 0;
-            }
-
-            @Override
-            public Node getNamedItemNS(String namespaceURI, String localName) throws DOMException {
-                return null;
-            }
-
-            @Override
-            public Node setNamedItemNS(Node arg) throws DOMException {
-                return null;
-            }
-
-            @Override
-            public Node removeNamedItemNS(String namespaceURI, String localName) throws DOMException {
-                return null;
-            }
-        };
-    }
-
-    public static Attr getAttribute(JPElement jpElement, PropertyMetaModel it) {
-        return new JPAttr(jpElement, it);
-    }
-
-    public static NamedNodeMap nodeMap(JPElement jpElement) {
-        return new NamedNodeMap() {
-            @Override
-            public Node getNamedItem(String name) {
-                return jpElement.lazyAttributes().stream()
-                        .filter(it -> it.getName().equals(name))
-                        .findFirst().orElse(null);
-            }
-
-            @Override
-            public Node setNamedItem(Node arg) throws DOMException {
-                throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "");
-            }
-
-            @Override
-            public Node removeNamedItem(String name) throws DOMException {
-                throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "");
-            }
-
-            @Override
-            public Node item(int index) {
-                return jpElement.lazyAttributes().get(index);
-            }
-
-            @Override
-            public int getLength() {
-                return jpElement.lazyAttributes().size();
-            }
-
-            @Override
-            public Node getNamedItemNS(String namespaceURI, String localName) throws DOMException {
-                throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "");
-            }
-
-            @Override
-            public Node setNamedItemNS(Node arg) throws DOMException {
-                throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "");
-            }
-
-            @Override
-            public Node removeNamedItemNS(String namespaceURI, String localName) throws DOMException {
-                throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "");
-            }
-        };
+        }
     }
 }

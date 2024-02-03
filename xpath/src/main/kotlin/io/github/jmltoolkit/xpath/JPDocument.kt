@@ -1,362 +1,213 @@
-package com.github.jmlparser.xpath;
+package io.github.jmltoolkit.xpath
 
-import com.github.javaparser.ast.CompilationUnit;
-import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.*;
+import com.github.javaparser.ast.CompilationUnit
+import org.w3c.dom.*
 
-import java.util.List;
+class JPDocument(node: CompilationUnit) : Document {
+    private val root: JPRootElement = JPRootElement(listOf(node), this)
 
-import static org.w3c.dom.DOMException.NOT_SUPPORTED_ERR;
+    override fun getDoctype(): DocumentType? = null
 
-public class JPDocument implements Document {
-    final JPRootElement root;
+    override fun getImplementation(): DOMImplementation? = null
 
-    public JPDocument(CompilationUnit node) {
-        root = new JPRootElement(List.of(node), this);
-    }
-
-    @Override
-    public DocumentType getDoctype() {
-        return null;
-    }
-
-    @Override
-    public DOMImplementation getImplementation() {
-        return null;
-    }
-
-    @Override
-    public Element getDocumentElement() {
-        return root;
-    }
-
-    @Override
-    public Element createElement(String tagName) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
-
-    @Override
-    public DocumentFragment createDocumentFragment() {
-        return null;
-    }
-
-    @Override
-    public Text createTextNode(String data) {
-        return null;
-    }
+    override fun getDocumentElement(): Element = root
 
-    @Override
-    public Comment createComment(String data) {
-        return null;
+    @Throws(DOMException::class)
+    override fun createElement(tagName: String): Element {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public CDATASection createCDATASection(String data) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
-
-    @Override
-    public ProcessingInstruction createProcessingInstruction(String target, String data) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
+    override fun createDocumentFragment(): DocumentFragment? = null
 
-    @Override
-    public Attr createAttribute(String name) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
+    override fun createTextNode(data: String): Text? = null
 
-    @Override
-    public EntityReference createEntityReference(String name) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
+    override fun createComment(data: String): Comment? = null
 
-    @Override
-    public NodeList getElementsByTagName(String tagname) {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun createCDATASection(data: String): CDATASection {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Node importNode(Node importedNode, boolean deep) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun createProcessingInstruction(target: String, data: String): ProcessingInstruction {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Element createElementNS(String namespaceURI, String qualifiedName) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-
+    @Throws(DOMException::class)
+    override fun createAttribute(name: String): Attr {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Attr createAttributeNS(String namespaceURI, String qualifiedName) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun createEntityReference(name: String): EntityReference {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public NodeList getElementsByTagNameNS(String namespaceURI, String localName) {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    override fun getElementsByTagName(tagname: String): NodeList {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Element getElementById(String elementId) {
-        return null;
+    @Throws(DOMException::class)
+    override fun importNode(importedNode: Node, deep: Boolean): Node {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public String getInputEncoding() {
-        return "utf-8";
+    @Throws(DOMException::class)
+    override fun createElementNS(namespaceURI: String, qualifiedName: String): Element {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public String getXmlEncoding() {
-        return "utf-8";
+    @Throws(DOMException::class)
+    override fun createAttributeNS(namespaceURI: String, qualifiedName: String): Attr {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public boolean getXmlStandalone() {
-        return true;
+    override fun getElementsByTagNameNS(namespaceURI: String, localName: String): NodeList {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public void setXmlStandalone(boolean xmlStandalone) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
+    override fun getElementById(elementId: String): Element? = null
 
-    @Override
-    public String getXmlVersion() {
-        return "1.0";
-    }
+    override fun getInputEncoding(): String = "utf-8"
 
-    @Override
-    public void setXmlVersion(String xmlVersion) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    override fun getXmlEncoding(): String = "utf-8"
 
-    }
+    override fun getXmlStandalone(): Boolean = true
 
-    @Override
-    public boolean getStrictErrorChecking() {
-        return false;
+    @Throws(DOMException::class)
+    override fun setXmlStandalone(xmlStandalone: Boolean) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
-
-    @Override
-    public void setStrictErrorChecking(boolean strictErrorChecking) {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
 
-    }
+    override fun getXmlVersion(): String = "1.0"
 
-    @Override
-    public String getDocumentURI() {
-        return null;
+    @Throws(DOMException::class)
+    override fun setXmlVersion(xmlVersion: String) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public void setDocumentURI(String documentURI) {
+    override fun getStrictErrorChecking(): Boolean = false
 
+    override fun setStrictErrorChecking(strictErrorChecking: Boolean) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Node adoptNode(Node source) throws DOMException {
-        return null;
-    }
+    override fun getDocumentURI(): String? = null
 
-    @Override
-    public DOMConfiguration getDomConfig() {
-        return null;
+    override fun setDocumentURI(documentURI: String) {
     }
 
-    @Override
-    public void normalizeDocument() {
-
-    }
+    @Throws(DOMException::class)
+    override fun adoptNode(source: Node): Node? = null
 
-    @Override
-    public Node renameNode(Node n, String namespaceURI, String qualifiedName) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
+    override fun getDomConfig(): DOMConfiguration? = null
 
-    @NotNull
-    @Override
-    public String getNodeName() {
-        return "#document";
+    override fun normalizeDocument() {
     }
 
-    @Override
-    public String getNodeValue() throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun renameNode(n: Node, namespaceURI: String, qualifiedName: String): Node {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public void setNodeValue(String nodeValue) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
+    override fun getNodeName(): String = "#document"
 
-    @Override
-    public short getNodeType() {
-        return DOCUMENT_TYPE_NODE;
+    @Throws(DOMException::class)
+    override fun getNodeValue(): String {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Node getParentNode() {
-        return null;
+    @Throws(DOMException::class)
+    override fun setNodeValue(nodeValue: String) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @NotNull
-    @Override
-    public NodeList getChildNodes() {
-        return DocumentFactories.wrap(root);
-    }
+    override fun getNodeType(): Short = Node.DOCUMENT_TYPE_NODE
 
-    @Override
-    public Node getFirstChild() {
-        return root;
-    }
+    override fun getParentNode(): Node? = null
 
-    @Override
-    public Node getLastChild() {
-        return root;
-    }
+    override fun getChildNodes(): NodeList = DocumentFactories.wrap(root)
 
-    @Override
-    public Node getPreviousSibling() {
-        return null;
-    }
+    override fun getFirstChild(): Node = root
 
-    @Override
-    public Node getNextSibling() {
-        return null;
-    }
+    override fun getLastChild(): Node = root
 
-    @Override
-    public NamedNodeMap getAttributes() {
-        return null;
-    }
+    override fun getPreviousSibling(): Node? = null
 
-    @Override
-    public Document getOwnerDocument() {
-        return this;
-    }
+    override fun getNextSibling(): Node? = null
 
-    @Override
-    public Node insertBefore(Node newChild, Node refChild) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
+    override fun getAttributes(): NamedNodeMap? = null
 
-    @Override
-    public Node replaceChild(Node newChild, Node oldChild) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
+    override fun getOwnerDocument(): Document = this
 
-    @Override
-    public Node removeChild(Node oldChild) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun insertBefore(newChild: Node, refChild: Node): Node {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Node appendChild(Node newChild) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun replaceChild(newChild: Node, oldChild: Node): Node {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public boolean hasChildNodes() {
-        return root != null;
+    @Throws(DOMException::class)
+    override fun removeChild(oldChild: Node): Node {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Node cloneNode(boolean deep) {
-        return null;
+    @Throws(DOMException::class)
+    override fun appendChild(newChild: Node): Node {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public void normalize() {
-
-    }
+    override fun hasChildNodes(): Boolean = root != null
 
-    @Override
-    public boolean isSupported(String feature, String version) {
-        return false;
-    }
+    override fun cloneNode(deep: Boolean): Node? = null
 
-    @Override
-    public String getNamespaceURI() {
-        return null;
+    override fun normalize() {
     }
 
-    @Override
-    public String getPrefix() {
-        return null;
-    }
+    override fun isSupported(feature: String, version: String): Boolean = false
 
-    @Override
-    public void setPrefix(String prefix) throws DOMException {
+    override fun getNamespaceURI(): String? = null
 
-    }
+    override fun getPrefix(): String? = null
 
-    @Override
-    public String getLocalName() {
-        return null;
+    @Throws(DOMException::class)
+    override fun setPrefix(prefix: String) {
     }
 
-    @Override
-    public boolean hasAttributes() {
-        return false;
-    }
+    override fun getLocalName(): String? = null
 
-    @Override
-    public String getBaseURI() {
-        return null;
-    }
+    override fun hasAttributes(): Boolean = false
 
-    @Override
-    public short compareDocumentPosition(Node other) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
+    override fun getBaseURI(): String? = null
 
-    @Override
-    public String getTextContent() throws DOMException {
-        return null;
+    @Throws(DOMException::class)
+    override fun compareDocumentPosition(other: Node): Short {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public void setTextContent(String textContent) throws DOMException {
+    @Throws(DOMException::class)
+    override fun getTextContent(): String? = null
 
+    @Throws(DOMException::class)
+    override fun setTextContent(textContent: String) {
     }
 
-    @Override
-    public boolean isSameNode(Node other) {
-        return false;
-    }
+    override fun isSameNode(other: Node): Boolean = false
 
-    @Override
-    public String lookupPrefix(String namespaceURI) {
-        return null;
-    }
+    override fun lookupPrefix(namespaceURI: String): String? = null
 
-    @Override
-    public boolean isDefaultNamespace(String namespaceURI) {
-        return false;
-    }
+    override fun isDefaultNamespace(namespaceURI: String): Boolean = false
 
-    @Override
-    public String lookupNamespaceURI(String prefix) {
-        return null;
-    }
+    override fun lookupNamespaceURI(prefix: String): String? = null
 
-    @Override
-    public boolean isEqualNode(Node arg) {
-        return false;
-    }
+    override fun isEqualNode(arg: Node): Boolean = false
 
-    @Override
-    public Object getFeature(String feature, String version) {
-        return null;
-    }
+    override fun getFeature(feature: String, version: String): Any? = null
 
-    @Override
-    public Object setUserData(String key, Object data, UserDataHandler handler) {
-        return null;
-    }
+    override fun setUserData(key: String, data: Any, handler: UserDataHandler): Any? = null
 
-    @Override
-    public Object getUserData(String key) {
-        return null;
-    }
+    override fun getUserData(key: String): Any? = null
 }

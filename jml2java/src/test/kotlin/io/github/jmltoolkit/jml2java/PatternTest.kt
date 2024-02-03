@@ -1,4 +1,4 @@
-package jml2java
+package io.github.jmltoolkit.jml2java
 
 import io.github.jmltoolkit.utils.Pattern
 import org.junit.jupiter.api.Test

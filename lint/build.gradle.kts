@@ -8,4 +8,6 @@ dependencies {
     api(libs.gson)
     implementation(libs.logback)
     implementation("se.bjurr.violations:violations-lib:1.156.7")
+
+    testImplementation(project(":utils"))
 }

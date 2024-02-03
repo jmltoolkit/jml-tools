@@ -1,325 +1,193 @@
-package com.github.jmlparser.xpath;
+package io.github.jmltoolkit.xpath
+
+import com.github.javaparser.ast.CompilationUnit
+import org.w3c.dom.*
 
 
-import com.github.javaparser.ast.CompilationUnit;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.w3c.dom.DOMException.NOT_SUPPORTED_ERR;
-
-public class JPRootElement implements Element {
-    private final List<CompilationUnit> nodes;
-    @Nullable
-    private List<Element> elements;
-    private final JPDocument document;
-
-    public JPRootElement(List<CompilationUnit> compilationUnits, JPDocument document) {
-        this.nodes = compilationUnits;
-        this.document = document;
+class JPRootElement(private val nodes: List<CompilationUnit>, private val document: JPDocument) : Element {
+    private val elements: List<Element> by lazy {
+        nodes.map { DocumentFactories.getElement(it, this) }
     }
 
-    @NotNull
-    private List<Element> lazyElements() {
-        if (elements == null) {
-            elements = nodes.stream()
-                    .map(it -> DocumentFactories.getElement(it, this))
-                    .collect(Collectors.toList());
-        }
-        return elements;
+    override fun getTagName(): String = "project"
+
+    override fun getAttribute(name: String): String = ""
+
+    @Throws(DOMException::class)
+    override fun setAttribute(name: String, value: String) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public String getTagName() {
-        return "project";
+    @Throws(DOMException::class)
+    override fun removeAttribute(name: String) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @NotNull
-    @Override
-    public String getAttribute(String name) {
-        return "";
+    override fun getAttributeNode(name: String): Attr? = null
+
+    @Throws(DOMException::class)
+    override fun setAttributeNode(newAttr: Attr): Attr {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public void setAttribute(String name, String value) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun removeAttributeNode(oldAttr: Attr): Attr {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public void removeAttribute(String name) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    override fun getElementsByTagName(name: String): NodeList {
+        throw IllegalStateException()
     }
 
-    @Override
-    public Attr getAttributeNode(String name) {
-        return null;
+    @Throws(DOMException::class)
+    override fun getAttributeNS(namespaceURI: String, localName: String): String = ""
+
+    @Throws(DOMException::class)
+    override fun setAttributeNS(namespaceURI: String, qualifiedName: String, value: String) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Attr setAttributeNode(Attr newAttr) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun removeAttributeNS(namespaceURI: String, localName: String) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Attr removeAttributeNode(Attr oldAttr) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun getAttributeNodeNS(namespaceURI: String, localName: String): Attr? = null
+
+    @Throws(DOMException::class)
+    override fun setAttributeNodeNS(newAttr: Attr): Attr {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @NotNull
-    @Override
-    public NodeList getElementsByTagName(String name) {
-        throw new IllegalStateException();
+    @Throws(DOMException::class)
+    override fun getElementsByTagNameNS(namespaceURI: String, localName: String): NodeList {
+        throw IllegalStateException()
     }
 
-    @NotNull
-    @Override
-    public String getAttributeNS(String namespaceURI, String localName) throws DOMException {
-        return "";
+    override fun hasAttribute(name: String): Boolean = false
+
+    @Throws(DOMException::class)
+    override fun hasAttributeNS(namespaceURI: String, localName: String): Boolean = false
+
+    override fun getSchemaTypeInfo(): TypeInfo? = null
+
+    @Throws(DOMException::class)
+    override fun setIdAttribute(name: String, isId: Boolean) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public void setAttributeNS(String namespaceURI, String qualifiedName, String value) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun setIdAttributeNS(namespaceURI: String, localName: String, isId: Boolean) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public void removeAttributeNS(String namespaceURI, String localName) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun setIdAttributeNode(idAttr: Attr, isId: Boolean) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Attr getAttributeNodeNS(String namespaceURI, String localName) throws DOMException {
-        return null;
+    override fun getNodeName(): String = tagName
+
+    @Throws(DOMException::class)
+    override fun getNodeValue(): String {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public Attr setAttributeNodeNS(Attr newAttr) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    @Throws(DOMException::class)
+    override fun setNodeValue(nodeValue: String) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @NotNull
-    @Override
-    public NodeList getElementsByTagNameNS(String namespaceURI, String localName) throws DOMException {
-        throw new IllegalStateException();
+    override fun getNodeType(): Short = Node.ELEMENT_NODE
+
+    override fun getParentNode(): Node = document
+
+    override fun getChildNodes(): NodeList = DocumentFactories.wrap(elements)
+
+    override fun getFirstChild(): Node = elements.first()
+
+    override fun getLastChild(): Node = elements.last()
+
+    override fun getPreviousSibling(): Node? = null
+
+    override fun getNextSibling(): Node? = null
+
+    override fun getAttributes(): NamedNodeMap = DocumentFactories.emptyNodeMap()
+
+    override fun getOwnerDocument(): Document = document
+
+    @Throws(DOMException::class)
+    override fun insertBefore(newChild: Node, refChild: Node): Node {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public boolean hasAttribute(String name) {
-        return false;
+    @Throws(DOMException::class)
+    override fun replaceChild(newChild: Node, oldChild: Node): Node {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public boolean hasAttributeNS(String namespaceURI, String localName) throws DOMException {
-        return false;
+    @Throws(DOMException::class)
+    override fun removeChild(oldChild: Node): Node {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public TypeInfo getSchemaTypeInfo() {
-        return null;
+    @Throws(DOMException::class)
+    override fun appendChild(newChild: Node): Node {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public void setIdAttribute(String name, boolean isId) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    override fun hasChildNodes(): Boolean = elements.isNotEmpty()
+
+    override fun cloneNode(deep: Boolean): Node? = null
+
+    override fun normalize() {
     }
 
-    @Override
-    public void setIdAttributeNS(String namespaceURI, String localName, boolean isId) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    override fun isSupported(feature: String, version: String): Boolean = false
+
+    override fun getNamespaceURI(): String? = null
+
+    override fun getPrefix(): String? = null
+
+    @Throws(DOMException::class)
+    override fun setPrefix(prefix: String) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @Override
-    public void setIdAttributeNode(Attr idAttr, boolean isId) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
+    override fun getLocalName(): String? = null
+
+    override fun hasAttributes(): Boolean = false
+
+    override fun getBaseURI(): String? = null
+
+    @Throws(DOMException::class)
+    override fun compareDocumentPosition(other: Node): Short = 0
+
+    @Throws(DOMException::class)
+    override fun getTextContent(): String = ""
+
+    @Throws(DOMException::class)
+    override fun setTextContent(textContent: String) {
+        throw DOMException(DOMException.NOT_SUPPORTED_ERR, "Not Supported")
     }
 
-    @NotNull
-    @Override
-    public String getNodeName() {
-        return getTagName();
+    override fun isSameNode(other: Node): Boolean {
+        return other is JPRootElement &&
+                this.document === other.document
     }
 
-    @Override
-    public String getNodeValue() throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
+    override fun lookupPrefix(namespaceURI: String): String = ""
 
-    @Override
-    public void setNodeValue(String nodeValue) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
+    override fun isDefaultNamespace(namespaceURI: String): Boolean = false
 
-    @Override
-    public short getNodeType() {
-        return ELEMENT_NODE;
-    }
+    override fun lookupNamespaceURI(prefix: String): String? = null
 
-    @Override
-    public Node getParentNode() {
-        return document;
-    }
+    override fun isEqualNode(arg: Node): Boolean = false
 
-    @NotNull
-    @Override
-    public NodeList getChildNodes() {
-        return DocumentFactories.wrap(lazyElements());
-    }
+    override fun getFeature(feature: String, version: String): Any? = null
 
-    @Override
-    public Node getFirstChild() {
-        return lazyElements().get(0);
-    }
+    override fun setUserData(key: String, data: Any, handler: UserDataHandler): Any? = null
 
-    @Override
-    public Node getLastChild() {
-        return lazyElements().get(lazyElements().size() - 1);
-    }
-
-    @Override
-    public Node getPreviousSibling() {
-        return null;
-    }
-
-    @Override
-    public Node getNextSibling() {
-        return null;
-    }
-
-    @Override
-    public NamedNodeMap getAttributes() {
-        return DocumentFactories.emptyNodeMap();
-    }
-
-    @Override
-    public Document getOwnerDocument() {
-        return document;
-    }
-
-    @Override
-    public Node insertBefore(Node newChild, Node refChild) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
-
-    @Override
-    public Node replaceChild(Node newChild, Node oldChild) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
-
-    @Override
-    public Node removeChild(Node oldChild) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
-
-    @Override
-    public Node appendChild(Node newChild) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
-
-    @Override
-    public boolean hasChildNodes() {
-        return !lazyElements().isEmpty();
-    }
-
-    @Override
-    public Node cloneNode(boolean deep) {
-        return null;
-    }
-
-    @Override
-    public void normalize() {
-    }
-
-    @Override
-    public boolean isSupported(String feature, String version) {
-        return false;
-    }
-
-    @Override
-    public String getNamespaceURI() {
-        return null;
-    }
-
-    @Override
-    public String getPrefix() {
-        return null;
-    }
-
-    @Override
-    public void setPrefix(String prefix) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
-
-    @Override
-    public String getLocalName() {
-        return null;
-    }
-
-    @Override
-    public boolean hasAttributes() {
-        return false;
-    }
-
-    @Override
-    public String getBaseURI() {
-        return null;
-    }
-
-    @Override
-    public short compareDocumentPosition(Node other) throws DOMException {
-        return 0;
-    }
-
-    @Override
-    public String getTextContent() throws DOMException {
-        return "";
-    }
-
-    @Override
-    public void setTextContent(String textContent) throws DOMException {
-        throw new DOMException(NOT_SUPPORTED_ERR, "Not Supported");
-    }
-
-    @Override
-    public boolean isSameNode(Node other) {
-        return other instanceof JPRootElement o &&
-                this.document == o.document;
-    }
-
-    @Override
-    public String lookupPrefix(String namespaceURI) {
-        return "";
-    }
-
-    @Override
-    public boolean isDefaultNamespace(String namespaceURI) {
-        return false;
-    }
-
-    @Override
-    public String lookupNamespaceURI(String prefix) {
-        return null;
-    }
-
-    @Override
-    public boolean isEqualNode(Node arg) {
-        return false;
-    }
-
-    @Override
-    public Object getFeature(String feature, String version) {
-        return null;
-    }
-
-    @Override
-    public Object setUserData(String key, Object data, UserDataHandler handler) {
-        return null;
-    }
-
-    @Override
-    public Object getUserData(String key) {
-        return null;
-    }
+    override fun getUserData(key: String): Any? = null
 }

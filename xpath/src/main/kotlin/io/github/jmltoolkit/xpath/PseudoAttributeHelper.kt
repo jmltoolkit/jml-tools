@@ -1,29 +1,21 @@
-package com.github.jmlparser.xpath;
+package io.github.jmltoolkit.xpath
 
-import com.github.javaparser.ast.Node;
-import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Element;
-
-import java.util.Collection;
+import com.github.javaparser.ast.Node
+import org.w3c.dom.Element
 
 /**
  * @author Alexander Weigl
  * @version 1 (11.02.23)
  */
-public abstract class PseudoAttributeHelper<T extends Node> implements PseudoAttributeProvider {
-    private final Class<T> clazz;
-
-    protected PseudoAttributeHelper(Class<T> clazz) {
-        this.clazz = clazz;
-    }
-
-    @Override
-    public final Collection<JPAttrPseudo> attributeForNode(@NotNull Node node, @NotNull Element owner) {
-        if (clazz == node.getClass()) {
-            return attributes((T) node, owner);
+abstract class PseudoAttributeHelper<T : Node?> protected constructor(private val clazz: Class<T>) :
+    PseudoAttributeProvider {
+    @Suppress("UNCHECKED_CAST")
+    override fun attributeForNode(node: Node, owner: Element): Collection<JPAttrPseudo> {
+        if (clazz == node.javaClass) {
+            return attributes(node as T, owner)
         }
-        return null;
+        return listOf()
     }
 
-    protected abstract Collection<JPAttrPseudo> attributes(@NotNull T node, Element owner);
+    protected abstract fun attributes(node: T, owner: Element?): Collection<JPAttrPseudo>
 }

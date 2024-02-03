@@ -1,23 +1,22 @@
-import com.github.jmlparser.TestWithJavaParser;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
+import io.github.jmltoolkit.lint.JmlLintingConfig
+import io.github.jmltoolkit.lint.JmlLintingFacade
+import io.github.jmltoolkit.utils.TestWithJavaParser
+import org.junit.jupiter.api.Assumptions
+import org.junit.jupiter.api.Test
 
 /**
  * @author Alexander Weigl
  * @version 1 (14.10.22)
  */
-class LinterTest extends TestWithJavaParser {
+internal class LinterTest : TestWithJavaParser() {
     @Test
-    void everythingWrong() {
-        var result = parser.parse(getClass().getResourceAsStream("EverythingWrong.java"));
-        Assumptions.assumeTrue(result.isSuccessful());
-        var actual =
-                new JmlLintingFacade(new JmlLintingConfig()).lint(Collections.singletonList(result.getResult().get()));
+    fun everythingWrong() {
+        val result = parser.parse(javaClass.getResourceAsStream("EverythingWrong.java"))
+        Assumptions.assumeTrue(result.isSuccessful)
+        val actual = JmlLintingFacade(JmlLintingConfig()).lint(listOf(result.result.get()))
 
-        for (LintProblem lintProblem : actual) {
-            System.out.println(lintProblem);
+        for (lintProblem in actual) {
+            println(lintProblem)
         }
     }
 }

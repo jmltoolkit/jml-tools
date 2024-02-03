@@ -1,11 +1,10 @@
-package jml2java
+package io.github.jmltoolkit.jml2java
 
 import com.github.javaparser.ParseResult
 import com.github.javaparser.Problem
 import com.github.javaparser.ast.expr.Expression
 import com.github.javaparser.printer.DefaultPrettyPrinter
 import com.google.common.truth.Truth
-import io.github.jmltoolkit.jml2java.Jml2JavaFacade
 import io.github.jmltoolkit.utils.TestWithJavaParser
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DynamicTest
@@ -23,7 +22,7 @@ class Jml2JavaTests : TestWithJavaParser() {
     @TestFactory
     @Throws(IOException::class)
     fun j2jTranslation(): Stream<DynamicTest> {
-        javaClass.getResourceAsStream("expr.yaml").use { inputStream ->
+        javaClass.getResourceAsStream("/expr.yaml").use { inputStream ->
             val yaml = Yaml()
             val obj: List<Map<String, Any>> = yaml.load(inputStream)
             return obj.stream().map { m: Map<String, Any> ->
@@ -36,7 +35,7 @@ class Jml2JavaTests : TestWithJavaParser() {
         }
     }
 
-    fun jml2JavaTranslation(input: String?, expected: String) {
+    private fun jml2JavaTranslation(input: String?, expected: String) {
         val e: ParseResult<Expression> = parser.parseJmlExpression(input)
         if (!e.isSuccessful) {
             e.problems.forEach(Consumer { x: Problem? -> System.err.println(x) })

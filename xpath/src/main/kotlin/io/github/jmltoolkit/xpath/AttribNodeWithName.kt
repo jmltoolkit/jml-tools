@@ -1,24 +1,18 @@
-package com.github.jmlparser.xpath;
+package io.github.jmltoolkit.xpath
 
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.nodeTypes.NodeWithName;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.Element;
-
-import java.util.Collection;
-import java.util.Collections;
+import com.github.javaparser.ast.Node
+import com.github.javaparser.ast.nodeTypes.NodeWithName
+import org.w3c.dom.Element
 
 /**
  * @author Alexander Weigl
  * @version 1 (11.02.23)
  */
-public class AttribNodeWithName implements PseudoAttributeProvider {
-    @Override
-    public @Nullable Collection<JPAttrPseudo> attributeForNode(@NotNull Node node, @NotNull Element owner) {
-        if (node instanceof NodeWithName<?> n) {
-            return Collections.singleton(new JPAttrPseudo("name", n::getNameAsString, owner));
+class AttribNodeWithName : PseudoAttributeProvider {
+    override fun attributeForNode(node: Node, owner: Element): Collection<JPAttrPseudo> {
+        if (node is NodeWithName<*>) {
+            return setOf(JPAttrPseudo("name", { node.nameAsString }, owner))
         }
-        return null;
+        return listOf()
     }
 }
