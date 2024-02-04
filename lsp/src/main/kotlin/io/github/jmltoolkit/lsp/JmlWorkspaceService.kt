@@ -1,4 +1,4 @@
-package jml.lsp
+package io.github.jmltoolkit.lsp
 
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either

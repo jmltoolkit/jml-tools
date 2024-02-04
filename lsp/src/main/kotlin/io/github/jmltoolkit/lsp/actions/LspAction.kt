@@ -1,7 +1,7 @@
-package jml.lsp.actions
+package io.github.jmltoolkit.lsp.actions
 
 import com.github.javaparser.ast.Node
-import jml.lsp.JmlLanguageServer
+import io.github.jmltoolkit.lsp.JmlLanguageServer
 import org.eclipse.lsp4j.CodeLens
 import org.eclipse.lsp4j.Command
 import java.util.concurrent.CompletableFuture

@@ -1,7 +1,7 @@
-package jml.lsp
+package io.github.jmltoolkit.lsp
 
 import com.github.javaparser.ast.jml.clauses.JmlContract
-import jml.lsp.actions.VerifyAgainstParent
+import io.github.jmltoolkit.lsp.actions.VerifyAgainstParent
 import org.eclipse.lsp4j.CodeLens
 import org.eclipse.lsp4j.Command
 

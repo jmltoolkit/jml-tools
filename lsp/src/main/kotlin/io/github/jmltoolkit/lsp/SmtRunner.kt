@@ -1,4 +1,4 @@
-package jml.lsp
+package io.github.jmltoolkit.lsp
 
 import java.io.File
 import java.util.concurrent.CompletableFuture

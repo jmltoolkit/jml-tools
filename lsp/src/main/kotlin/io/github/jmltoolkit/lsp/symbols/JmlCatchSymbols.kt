@@ -1,4 +1,4 @@
-package jml.lsp
+package io.github.jmltoolkit.lsp.symbols
 
 import com.github.javaparser.ast.CompilationUnit
 import com.github.javaparser.ast.Node
@@ -9,6 +9,7 @@ import com.github.javaparser.ast.jml.body.*
 import com.github.javaparser.ast.jml.clauses.*
 import com.github.javaparser.ast.modules.ModuleDeclaration
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter
+import io.github.jmltoolkit.lsp.asRange
 import org.eclipse.lsp4j.DocumentSymbol
 import org.eclipse.lsp4j.SymbolKind
 import java.util.*
@@ -18,7 +19,7 @@ import java.util.*
  *
  * @author Alexander Weigl
  */
-class CatchSymbols : GenericVisitorAdapter<MutableList<DocumentSymbol>?, Unit?>() {
+class JmlCatchSymbols : GenericVisitorAdapter<MutableList<DocumentSymbol>?, Unit?>() {
     override fun visit(n: CompilationUnit, arg: Unit?): MutableList<DocumentSymbol> {
         val children = acceptAll(n.types)
         return arrayListOf(

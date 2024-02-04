@@ -1,4 +1,4 @@
-package jml.lsp
+package io.github.jmltoolkit.lsp.linter
 
 import com.github.javaparser.ast.Node
 import io.github.jmltoolkit.lint.JmlLintingConfig

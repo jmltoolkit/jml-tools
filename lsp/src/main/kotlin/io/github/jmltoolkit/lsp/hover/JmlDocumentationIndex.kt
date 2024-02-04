@@ -1,6 +1,6 @@
-package jml.lsp
+package io.github.jmltoolkit.lsp.hover
 
-class DocumentationIndex {
+class JmlDocumentationIndex {
     private val index by lazy {
         val map = mutableMapOf<String, String>()
         val lines = javaClass.getResourceAsStream("/doc.md")

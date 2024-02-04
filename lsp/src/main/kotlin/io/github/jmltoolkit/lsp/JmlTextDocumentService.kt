@@ -1,4 +1,4 @@
-package jml.lsp
+package io.github.jmltoolkit.lsp
 
 import com.github.javaparser.JavaParser
 import com.github.javaparser.ParseResult
@@ -16,6 +16,11 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeS
 import com.google.common.hash.Hashing.crc32
 import io.github.jmltoolkit.lint.JmlLintingConfig
 import io.github.jmltoolkit.lint.JmlLintingFacade
+import io.github.jmltoolkit.lsp.highlighting.JmlDocumentHighlighter
+import io.github.jmltoolkit.lsp.highlighting.KeyDocumentHighlighter
+import io.github.jmltoolkit.lsp.hover.JmlDocumentationIndex
+import io.github.jmltoolkit.lsp.symbols.JmlCatchSymbols
+import io.github.jmltoolkit.lsp.symbols.KeyCatchSymbols
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.jsonrpc.messages.Either
 import org.eclipse.lsp4j.services.TextDocumentService
@@ -167,6 +172,9 @@ class AstRepository(val server: JmlLanguageServer) {
  */
 @JvmInline
 value class Uri(val value: String) {
+    val isKeyFile: Boolean
+        get() = file.extension == "key"
+
     val localFilePath: String
         get() = value.removePrefix("file://")
     val path: Path
@@ -175,18 +183,12 @@ value class Uri(val value: String) {
         get() = File(localFilePath)
 }
 
-class JmlTextDocumentService(server: JmlLanguageServer) : TextDocumentService {
+class JmlTextDocumentService(private val server: JmlLanguageServer) : TextDocumentService {
     val repo = AstRepository(server)
 
-    val documentHighlighter by lazy {
-        server.capabilities?.textDocument?.semanticTokens?.let {
-            it.multilineTokenSupport
-            println(it.tokenTypes)
-            println(it.tokenModifiers)
-
-        }
-        DocumentHighlighter()
-    }
+    val jmlDocumentHighlighter = JmlDocumentHighlighter()
+    val keyDocumentHighlighter = KeyDocumentHighlighter()
+    val highlighters = listOf(jmlDocumentHighlighter, keyDocumentHighlighter)
 
     override fun didOpen(params: DidOpenTextDocumentParams) {
         Logger.info("didOpen: {}", params)
@@ -243,10 +245,10 @@ class JmlTextDocumentService(server: JmlLanguageServer) : TextDocumentService {
     }
 
 
-    private val documentationIndex by lazy { DocumentationIndex() }
+    private val jmlDocumentationIndex by lazy { JmlDocumentationIndex() }
 
     private fun retrieveDocumentation(tokenText: String): Hover? =
-        documentationIndex.get(tokenText)
+        jmlDocumentationIndex.get(tokenText)
             ?.let { text -> Hover(MarkupContent("markdown", text)) }
 
     override fun signatureHelp(params: SignatureHelpParams): CompletableFuture<SignatureHelp> {
@@ -336,17 +338,20 @@ class JmlTextDocumentService(server: JmlLanguageServer) : TextDocumentService {
     override fun documentSymbol(params: DocumentSymbolParams): CompletableFuture<MutableList<Either<SymbolInformation, DocumentSymbol>>> {
         Logger.info("params: {}", params)
         val uri = Uri(params.textDocument.uri)
-        return repo.get(uri).thenApply {
-            Logger.info("Parse: {}", it)
-            if (!it.result.isPresent) mutableListOf()
-            else resolveSymbol(it.result.get())
-        }
+        return if (uri.isKeyFile)
+            CompletableFuture.supplyAsync { KeyCatchSymbols(uri).run() }
+        else
+            repo.get(uri).thenApply {
+                Logger.info("Parse: {}", it)
+                if (!it.result.isPresent) mutableListOf()
+                else resolveSymbol(it.result.get())
+            }
     }
 
     private fun resolveSymbol(compilationUnit: CompilationUnit)
             : MutableList<Either<SymbolInformation, DocumentSymbol>> {
         Logger.info("Resolve symbols for compiluation unit: {}", compilationUnit.storage.get().path)
-        val visitor = CatchSymbols()
+        val visitor = JmlCatchSymbols()
         val a = compilationUnit.accept(visitor, null) ?: arrayListOf()
         Logger.info("Symbols caught: {}", a.size)
         val b = a.map { Either.forRight<SymbolInformation, DocumentSymbol>(it) }
@@ -482,7 +487,11 @@ class JmlTextDocumentService(server: JmlLanguageServer) : TextDocumentService {
         CompletableFuture.supplyAsync {
             val doc = Uri(params.textDocument.uri)
             val text = doc.file.readText()
-            documentHighlighter.analyzeJmlToken(text)
+            when (doc.file.extension) {
+                "java" -> jmlDocumentHighlighter.analyzeJmlToken(text)
+                "key" -> keyDocumentHighlighter.analyzeJmlToken(text)
+                else -> SemanticTokens()
+            }
         }
 
     override fun semanticTokensFullDelta(params: SemanticTokensDeltaParams?): CompletableFuture<Either<SemanticTokens, SemanticTokensDelta>> {

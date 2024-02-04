@@ -1,8 +1,8 @@
-package jml.lsp.actions
+package io.github.jmltoolkit.lsp.actions
 
 import com.github.javaparser.ast.expr.Expression
-import jml.lsp.JmlLanguageServer
-import jml.lsp.asRange
+import io.github.jmltoolkit.lsp.JmlLanguageServer
+import io.github.jmltoolkit.lsp.asRange
 import org.eclipse.lsp4j.*
 import java.util.concurrent.CompletableFuture
 

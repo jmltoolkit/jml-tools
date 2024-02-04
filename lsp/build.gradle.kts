@@ -1,5 +1,6 @@
 plugins {
     id("standard-kotlin")
+    kotlin("plugin.serialization") version libs.versions.kotlin.get()
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("application")
 }
@@ -11,6 +12,9 @@ dependencies {
     api(libs.jmlsymbol)
 
     testImplementation(kotlin("test"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    //implementation(kotlin("serialization"))
 
     implementation(project(":utils"))
     implementation(project(":smt"))
@@ -28,9 +32,12 @@ dependencies {
 
     implementation("com.github.ajalt.clikt:clikt:4.2.2")
 
+    implementation("org.key-project:key.core:2.12.2")
+    implementation("org.key-project:key.ui:2.12.2")
+
     //implementation("org.apache.groovy:groovy:4.0.6")
 }
 
 application {
-    mainClass = "jml.lsp.Main"
+    mainClass = "io.github.jmltoolkit.lsp.Main"
 }

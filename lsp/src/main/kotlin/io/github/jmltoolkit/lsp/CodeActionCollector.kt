@@ -1,4 +1,4 @@
-package jml.lsp
+package io.github.jmltoolkit.lsp
 
 import com.github.javaparser.ast.Node
 import com.github.javaparser.ast.expr.Expression

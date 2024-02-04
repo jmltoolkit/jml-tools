@@ -1,8 +1,10 @@
-package jml.lsp
+package io.github.jmltoolkit.lsp
 
-import jml.lsp.actions.LspAction
+import io.github.jmltoolkit.lsp.actions.LspAction
+import io.github.jmltoolkit.lsp.highlighting.LEGEND
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.services.*
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ForkJoinPool
@@ -19,15 +21,17 @@ class JmlLanguageServer : LanguageServer, LanguageClientAware {
     internal lateinit var workspaceFolders: List<WorkspaceFolder>
     internal val jmlNotebookDocumentServices by lazy { JmlNotebookDocumentServices() }
 
+    internal val config = ProjectDefinitionService()
+
     internal val actions by lazy {
-        //ServiceLoader.load(LspAction::class.java).toList()
-        //listOf(VerifyAgainstParent, WellDefinednessCheck)
-        listOf<LspAction<*>>()
+        ServiceLoader.load(LspAction::class.java).toList()
     }
 
     override fun initialize(params: InitializeParams): CompletableFuture<InitializeResult> {
         workspaceFolders = params.workspaceFolders
         capabilities = params.capabilities
+
+        config.update(workspaceFolders.map { Uri(it.uri) })
 
         return CompletableFuture.supplyAsync {
             val capabilities = ServerCapabilities()
@@ -50,7 +54,10 @@ class JmlLanguageServer : LanguageServer, LanguageClientAware {
 
             capabilities.semanticTokensProvider = SemanticTokensWithRegistrationOptions(
                 LEGEND, SemanticTokensServerFull(false), false,
-                listOf(DocumentFilter("java", "file", "*.java"))
+                listOf(
+                    DocumentFilter("java", "file", "*.java"),
+                    DocumentFilter("key", "file", "*.key"),
+                )
             )
 
             // capabilities.setCodeActionProvider(CodeActionOptions(listOf("validity")))

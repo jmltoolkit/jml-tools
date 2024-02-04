@@ -1,10 +1,10 @@
-package jml.lsp
+package io.github.jmltoolkit.lsp
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
-import jml.lsp.JmlLanguageServer
+import io.github.jmltoolkit.lsp.JmlLanguageServer
 import org.eclipse.lsp4j.launch.LSPLauncher
 import org.eclipse.lsp4j.services.LanguageClient
 import org.tinylog.Logger

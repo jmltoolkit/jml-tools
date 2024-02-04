@@ -1,9 +1,9 @@
-package jml.lsp.actions
+package io.github.jmltoolkit.lsp.actions
 
 import com.github.javaparser.ast.jml.clauses.JmlContract
 import com.google.common.cache.CacheBuilder
-import jml.lsp.JmlLanguageServer
-import jml.lsp.asRange
+import io.github.jmltoolkit.lsp.JmlLanguageServer
+import io.github.jmltoolkit.lsp.asRange
 import org.eclipse.lsp4j.CodeLens
 import org.eclipse.lsp4j.MessageParams
 import org.eclipse.lsp4j.MessageType

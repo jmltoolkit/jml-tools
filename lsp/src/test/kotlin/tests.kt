@@ -1,7 +1,7 @@
 import com.google.common.truth.Truth
-import jml.lsp.DocumentationIndex
-import jml.lsp.JmlLanguageServer
-import jml.lsp.Uri
+import io.github.jmltoolkit.lsp.hover.JmlDocumentationIndex
+import io.github.jmltoolkit.lsp.JmlLanguageServer
+import io.github.jmltoolkit.lsp.Uri
 import org.eclipse.lsp4j.*
 import org.eclipse.lsp4j.services.LanguageClient
 import org.junit.jupiter.api.DynamicTest
@@ -46,7 +46,7 @@ class HoverTest {
 
     @Test
     fun docIndex() {
-        val idx = DocumentationIndex()
+        val idx = JmlDocumentationIndex()
         val mbtext = idx.get("model_behavior")
         val btext = idx.get("behavior")
         Truth.assertThat(mbtext).isEqualTo(btext)
