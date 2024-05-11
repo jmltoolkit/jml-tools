@@ -27,7 +27,7 @@ object Helper {
                 }
             } else {
                 //traverse
-                queue.addAll(node.getChildNodes())
+                queue.addAll(node.childNodes)
             }
         }
 
@@ -43,7 +43,7 @@ object Helper {
             if (n is Jmlish) {
                 res.add(n)
             } else {
-                queue.addAll(n.getChildNodes())
+                queue.addAll(n.childNodes)
             }
         }
         return res

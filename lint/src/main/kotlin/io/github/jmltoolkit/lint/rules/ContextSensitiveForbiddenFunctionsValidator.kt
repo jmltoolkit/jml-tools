@@ -26,7 +26,7 @@ class ContextSensitiveForbiddenFunctionsValidator : LintRuleVisitor() {
             }
         }
 
-        for (subContract in n.getSubContracts()) {
+        for (subContract in n.subContracts) {
             reportMultipleSignalsOnlyClauses(subContract, arg)
         }
     }

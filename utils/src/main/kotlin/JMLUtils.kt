@@ -62,7 +62,7 @@ object JMLUtils {
             .toList()
         for (sub in seq) {
             for (clause in c.clauses) {
-                sub.getClauses().add(clause.clone())
+                sub.clauses.add(clause.clone())
             }
         }
         return seq
@@ -72,7 +72,7 @@ object JMLUtils {
     fun createJointContract(m: NodeList<JmlContract>): JmlContract {
         val find = m.stream()
             .filter { name ->
-                name.getName().map { simpleName -> simpleName.asString().equals(GENERATED_COMBINED) }
+                name.name.map { simpleName -> simpleName.asString().equals(GENERATED_COMBINED) }
                     .orElse(false)
             }.findFirst()
         if (find.isPresent) return find.get()

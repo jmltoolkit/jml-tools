@@ -20,7 +20,7 @@ class JavaTemplate<T : Node>(private val template: T) {
     }
 
     private fun <R : Node?, O : Node?> replace(node: Node, factory: SubstitutionFactory) {
-        for (childNode in node.getChildNodes()) {
+        for (childNode in node.childNodes) {
             replace<Node, Node>(childNode, factory)
             if (factory.replacable(childNode)) {
                 node.replace(childNode, factory.substitutionOf(childNode))

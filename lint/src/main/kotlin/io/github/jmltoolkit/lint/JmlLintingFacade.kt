@@ -51,7 +51,7 @@ class JmlLintingFacade(private val config: JmlLintingConfig) {
             .withRuns(runs)
     }
 
-    private fun asSarif(it: LintProblem): se.bjurr.violations.lib.model.generated.sarif.Result {
+    private fun asSarif(it: LintProblem): Result {
         return Result().withRuleId(it.ruleId).withKind(it.category).withLevel(it.level)
             .withLocations(listOf(Location())).withMessage(Message().withText(it.message))
     }
