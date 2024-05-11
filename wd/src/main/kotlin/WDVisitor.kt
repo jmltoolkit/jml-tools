@@ -18,6 +18,7 @@ import io.github.jmltoolkit.smt.model.SExpr
 import java.math.BigInteger
 
 /**
+ *
  * @author Alexander Weigl
  * @version 1 (14.06.22)
  */

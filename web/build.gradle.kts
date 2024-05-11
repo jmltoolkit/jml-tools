@@ -16,5 +16,7 @@ dependencies {
     implementation(libs.ktor.core)
     implementation(libs.ktor.html)
     implementation(libs.ktor.netty)
+    implementation(libs.ktor.statuspages)
+    implementation(libs.ktor.severhtml)
     implementation(libs.logback)
 }

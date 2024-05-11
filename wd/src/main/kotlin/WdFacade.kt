@@ -11,6 +11,7 @@ import io.github.jmltoolkit.smt.model.SExpr
 import io.github.jmltoolkit.smt.solver.SolverAnswer
 
 /**
+ * Facade to dive into *well-definedness* checks.
  *
  * @author Alexander Weigl
  * @version 1 (28.01.24)

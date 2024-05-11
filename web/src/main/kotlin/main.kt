@@ -8,15 +8,17 @@ import com.github.javaparser.metamodel.NodeMetaModel
 import com.github.javaparser.metamodel.PropertyMetaModel
 import com.github.javaparser.printer.DefaultPrettyPrinter
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration
-import io.ktor.application.*
-import io.ktor.features.*
 import io.ktor.html.*
+import io.ktor.html.Placeholder
 import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.request.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
+import io.ktor.server.html.*
+import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.request.*
+import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
 import kotlinx.html.*
 import java.io.StringReader
@@ -34,10 +36,7 @@ fun main() {
                 val params = call.receiveParameters()
                 renderPage(params)
             }
-
-            static("assets") {
-                resources("assets")
-            }
+            staticResources("assets", "assets")
         }
     }.start(wait = true)
 }
@@ -95,16 +94,16 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.renderPage(params: Pa
                 config.isProcessJml = !doNotProcessJml
 
                 if (keyKey != null) {
-                    config.jmlKeys.add(arrayListOf<String>("key"))
+                    config.jmlKeys.add(arrayListOf("key"))
                 }
                 if (keyESC != null) {
-                    config.jmlKeys.add(arrayListOf<String>("openjml"))
+                    config.jmlKeys.add(arrayListOf("openjml"))
                 }
                 if (keyOpenJml != null) {
-                    config.jmlKeys.add(arrayListOf<String>("ESC"))
+                    config.jmlKeys.add(arrayListOf("ESC"))
                 }
                 if (keyRAC != null) {
-                    config.jmlKeys.add(arrayListOf<String>("RAC"))
+                    config.jmlKeys.add(arrayListOf("RAC"))
                 }
 
                 val jpb = JavaParser(config)
@@ -198,7 +197,7 @@ inline fun FlowContent.accordion(
     details("accordion") {
         open = isOpen
         summary("accordion-header") {
-            i(classes = "icon icon-arrow-right mr-1 " + icon) {}
+            i(classes = "icon icon-arrow-right mr-1 $icon") {}
             +title
         }
         div("accordion-body") {
@@ -218,7 +217,7 @@ inline fun FlowOrInteractiveOrPhrasingContent.spectreCheckBox(
 }
 
 
-open class DefaultPage : Template<HTML> {
+open class DefaultPage : io.ktor.server.html.Template<HTML> {
     val body = Placeholder<FlowContent>()
     val right = Placeholder<FlowContent>()
     val top = Placeholder<FlowContent>()
