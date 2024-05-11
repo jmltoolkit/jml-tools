@@ -49,22 +49,21 @@ class StatVisitor(
     }
 
     override fun visit(n: ClassOrInterfaceDeclaration, arg: Element) {
-        val arg = newJavaContext(arg, n)
-        super.visit(n, arg)
+        val e = newJavaContext(arg, n)
+        super.visit(n, e)
     }
 
     override fun visit(n: ConstructorDeclaration, arg: Element) {
-        var arg = arg
-        arg = newJavaContext(
+        var e = newJavaContext(
             arg, n.javaClass.getSimpleName(),
             n.getDeclarationAsString(false, false, true)
         )
-        super.visit(n, arg)
+        super.visit(n, e)
     }
 
     override fun visit(n: AnnotationDeclaration, arg: Element) {
-        val arg = newJavaContext(arg, n)
-        super.visit(n, arg)
+        val e = newJavaContext(arg, n)
+        super.visit(n, e)
     }
 
     override fun visit(n: AnnotationMemberDeclaration, arg: Element) {
@@ -127,19 +126,19 @@ class StatVisitor(
     //endregion
     override fun visit(n: JmlClassExprDeclaration, arg: Element) {
         if (active(n)) {
-            val e = newElement(arg, n.getKind().getIdentifier())
-            val expr = getExpressionStat(n.getInvariant())
+            val e = newElement(arg, n.kind.identifier)
+            val expr = getExpressionStat(n.invariant)
             e.appendChild(expr)
-            if (n.getName().isPresent()) {
-                e.setAttribute("name", n.getName().get().asString())
+            if (n.name.isPresent) {
+                e.setAttribute("name", n.name.get().asString())
             }
             setModifierAsAttributes(n, e)
         }
     }
 
     private fun setModifierAsAttributes(n: NodeWithModifiers<*>, e: Element) {
-        for (modifier in n.getModifiers()) {
-            e.setAttribute("has" + modifier.getKeyword().asString(), "true")
+        for (modifier in n.modifiers) {
+            e.setAttribute("has" + modifier.keyword.asString(), "true")
         }
     }
 
@@ -182,31 +181,31 @@ class StatVisitor(
     override fun visit(n: JmlRepresentsDeclaration, arg: Element) {
         if (active(n)) {
             val a = newElement(arg, "represents")
-            a.setAttribute("name", n.getNameAsString())
+            a.setAttribute("name", n.nameAsString)
             setModifierAsAttributes(n, a)
         }
     }
 
     override fun visit(n: JmlMethodDeclaration, arg: Element) {
-        var arg = arg
+        var e = arg
         if (active(n)) {
-            arg = newJavaContext(arg, n.javaClass.getSimpleName(), n.getMethodDeclaration().getNameAsString())
-            setModifierAsAttributes(n.getMethodDeclaration(), arg)
-            super.visit(n.getMethodDeclaration(), arg)
+            e = newJavaContext(e, n.javaClass.getSimpleName(), n.methodDeclaration.nameAsString)
+            setModifierAsAttributes(n.methodDeclaration, e)
+            super.visit(n.methodDeclaration, e)
         }
     }
 
 
     override fun visit(n: JmlContract, arg: Element) {
         if (active(n)) {
-            var name = "contract_" + n.getRange().get().begin.line
-            if (n.getName().isPresent()) {
-                name = n.getName().get().getIdentifier()
+            var name = "contract_" + n.range.get().begin.line
+            if (n.name.isPresent) {
+                name = n.name.get().identifier
             }
             val e = newJavaContext(arg, n.javaClass.getSimpleName(), name)
-            e.setAttribute("type", n.getType().toString())
+            e.setAttribute("type", n.type.toString())
             setModifierAsAttributes(n, e)
-            e.setAttribute("behavior", "" + n.getBehavior())
+            e.setAttribute("behavior", "" + n.behavior)
             super.visit(n, e)
         }
     }
@@ -252,46 +251,38 @@ class StatVisitor(
     }
 
     override fun visit(n: JmlSimpleExprClause, arg: Element) {
-        val e = newElement(arg, n.getKind().jmlSymbol)
-        e.appendChild(getExpressionStat(n.getExpression()))
+        val e = newElement(arg, n.kind.jmlSymbol)
+        e.appendChild(getExpressionStat(n.expression))
     }
 
     override fun visit(n: JmlSignalsClause, arg: Element) {
-        newElement(arg, n.getKind().jmlSymbol)
+        newElement(arg, n.kind.jmlSymbol)
     }
 
     override fun visit(n: JmlSignalsOnlyClause, arg: Element) {
-        val e = newElement(arg, n.getKind().jmlSymbol)
-        e.setAttribute("numOfTypes", "" + n.getTypes().size)
+        val e = newElement(arg, n.kind.jmlSymbol)
+        e.setAttribute("numOfTypes", "" + n.types.size)
     }
 
     override fun visit(n: JmlOldClause, arg: Element) {
-        val e = newElement(arg, n.getKind().jmlSymbol)
-        e.setAttribute("numOfDecls", "" + n.getDeclarations().getVariables().size)
-    }
-
-    override fun visit(n: JmlAccessibleClause, arg: Element) {
-        super.visit(n, arg)
+        val e = newElement(arg, n.kind.jmlSymbol)
+        e.setAttribute("numOfDecls", "" + n.declarations.variables.size)
     }
 
     override fun visit(n: JmlMultiExprClause, arg: Element) {
-        val e = newElement(arg, n.getKind().jmlSymbol)
-        for (expression in n.getExpressions()) {
+        val e = newElement(arg, n.kind.jmlSymbol)
+        for (expression in n.expressions) {
             e.appendChild(getExpressionStat(expression))
         }
     }
 
     override fun visit(n: JmlCallableClause, arg: Element) {
-        val e = newElement(arg, n.getKind().jmlSymbol)
-    }
-
-    override fun visit(n: JmlCapturesClause, arg: Element) {
-        val e = newElement(arg, n.getKind().jmlSymbol)
+        val e = newElement(arg, n.kind.jmlSymbol)
     }
 
     override fun visit(n: JmlForallClause, arg: Element) {
-        val e = newElement(arg, n.getKind().jmlSymbol)
-        e.setAttribute("numVars", "" + n.getBoundedVariables().size)
+        val e = newElement(arg, n.kind.jmlSymbol)
+        e.setAttribute("numVars", "" + n.boundedVariables.size)
     }
 
     override fun visit(n: JmlRefiningStmt, arg: Element) {

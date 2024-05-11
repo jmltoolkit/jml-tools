@@ -200,7 +200,7 @@ class JmlExpr2Smt(private val smtLog: SmtQuery, val translator: ArithmeticTransl
         val variable: SExpr = translator.makeVar(method.returnType)
         val ast = method.toAst().getOrNull()
         if (ast is NodeWithContracts<*>) {
-            val contract = JMLUtils.createJointContract(ast.contracts.get())
+            val contract = JMLUtils.createJointContract(ast.contracts)
             //TODO weigl add assertion for the return variable
             //TODO weigl add assertion for each parameter
             // smtLog.addAssert();

@@ -1,4 +1,4 @@
-package com.github.jmlparser.lint.rules
+package io.github.jmltoolkit.lint.rules
 
 import com.github.javaparser.ast.body.MethodDeclaration
 import com.github.javaparser.ast.expr.NameExpr
@@ -20,7 +20,7 @@ class ResultVarCheck : LintRuleVisitor() {
 
     override fun visit(n: MethodDeclaration, arg: LintProblemReporter) {
         inMethodWithNonVoidReturnType = !n.type.isVoidType
-        n.contracts.ifPresent { l -> l.forEach { v -> v.accept(this, arg) } }
+        n.contracts.forEach { v -> v.accept(this, arg) }
         inMethodWithNonVoidReturnType = false
         n.body.ifPresent { l -> l.accept(this, arg) }
     }

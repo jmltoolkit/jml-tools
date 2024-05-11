@@ -3,6 +3,7 @@ package com.github.jmlparser.lint.rules
 import com.github.javaparser.ast.NodeList
 import com.github.javaparser.ast.body.MethodDeclaration
 import com.github.javaparser.ast.jml.NodeWithContracts
+import com.github.javaparser.ast.jml.clauses.ContractType
 import com.github.javaparser.ast.jml.clauses.JmlClause
 import com.github.javaparser.ast.jml.clauses.JmlClauseKind
 import com.github.javaparser.ast.jml.clauses.JmlClauseKind.*
@@ -151,7 +152,7 @@ class AllowedJmlClauses : LintRuleVisitor() {
                 || owner is WhileStmt
                 || owner is DoStmt
             ) {
-                if (n.type === JmlContract.Type.LOOP_INV) checkClauses(
+                if (n.type === ContractType.LOOP_INV) checkClauses(
                     arg,
                     n.clauses,
                     LOOP_INVARIANT_CLAUSES,

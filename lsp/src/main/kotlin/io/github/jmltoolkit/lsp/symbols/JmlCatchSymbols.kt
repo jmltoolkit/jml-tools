@@ -72,7 +72,7 @@ class JmlCatchSymbols : GenericVisitorAdapter<MutableList<DocumentSymbol>?, Unit
         acceptAll(members?.orElse(null))
 
     override fun visit(n: ConstructorDeclaration, arg: Unit?): MutableList<DocumentSymbol> {
-        val children = acceptAllo(n.contracts)
+        val children = acceptAll(n.contracts)
         return arrayListOf(
             DocumentSymbol(
                 n.nameAsString,
@@ -115,7 +115,7 @@ class JmlCatchSymbols : GenericVisitorAdapter<MutableList<DocumentSymbol>?, Unit
     }
 
     override fun visit(n: MethodDeclaration, arg: Unit?): MutableList<DocumentSymbol> {
-        val children = acceptAllo(n.contracts)
+        val children = acceptAll(n.contracts)
         return arrayListOf(
             DocumentSymbol(
                 n.nameAsString,
@@ -203,10 +203,6 @@ class JmlCatchSymbols : GenericVisitorAdapter<MutableList<DocumentSymbol>?, Unit
     }
 
     override fun visit(n: JmlCallableClause?, arg: Unit?): MutableList<DocumentSymbol>? {
-        return super.visit(n, arg)
-    }
-
-    override fun visit(n: JmlCapturesClause?, arg: Unit?): MutableList<DocumentSymbol>? {
         return super.visit(n, arg)
     }
 

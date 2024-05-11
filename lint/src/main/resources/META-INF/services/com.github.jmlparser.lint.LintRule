@@ -6,4 +6,4 @@ com.github.jmlparser.lint.rules.LocationSetValidator
 com.github.jmlparser.lint.rules.PurityValidator
 com.github.jmlparser.lint.rules.OverridingLocalNamesInGhost
 com.github.jmlparser.lint.rules.AllowedJmlClauses
-com.github.jmlparser.lint.rules.ResultVarCheck
+io.github.jmltoolkit.lint.rules.ResultVarCheck
