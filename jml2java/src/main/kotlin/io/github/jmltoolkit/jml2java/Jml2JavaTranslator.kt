@@ -70,7 +70,7 @@ class Jml2JavaTranslator {
                 if (e.operators[0] == BinaryExpr.Operator.LESS_EQUALS) return e.expressions[0]
                 if (e.operators[0] == BinaryExpr.Operator.LESS) return BinaryExpr(
                     e.expressions[0],
-                    IntegerLiteralExpr(1),
+                    IntegerLiteralExpr("1"),
                     BinaryExpr.Operator.PLUS
                 )
                 throw IllegalStateException()
@@ -93,7 +93,7 @@ class Jml2JavaTranslator {
             val result = pattern.find(n)
             if (result != null) return BinaryExpr(
                 result["min"] as Expression?,
-                IntegerLiteralExpr(1),
+                IntegerLiteralExpr("1"),
                 BinaryExpr.Operator.PLUS
             )
         }
@@ -113,7 +113,7 @@ class Jml2JavaTranslator {
             val result = pattern.find(n)
             if (result != null) return BinaryExpr(
                 result["min"] as Expression?,
-                IntegerLiteralExpr(1),
+                IntegerLiteralExpr("1"),
                 BinaryExpr.Operator.PLUS
             )
         }
@@ -335,7 +335,7 @@ class Jml2JavaTranslator {
                 ) {
                     if (e.operators[0] == BinaryExpr.Operator.LESS_EQUALS) return e.expressions[0]
                     if (e.operators[0] == BinaryExpr.Operator.LESS) return BinaryExpr(
-                        e.expressions[0], IntegerLiteralExpr(1), BinaryExpr.Operator.PLUS
+                        e.expressions[0], IntegerLiteralExpr("1"), BinaryExpr.Operator.PLUS
                     )
                     throw IllegalStateException()
                 }
@@ -357,7 +357,7 @@ class Jml2JavaTranslator {
                 val result = pattern.find(n)
                 if (result != null) return BinaryExpr(
                     result["min"] as Expression?,
-                    IntegerLiteralExpr(1),
+                    IntegerLiteralExpr("1"),
                     BinaryExpr.Operator.PLUS
                 )
             }
@@ -377,7 +377,7 @@ class Jml2JavaTranslator {
                 val result = pattern.find(n)
                 if (result != null) return BinaryExpr(
                     result["min"] as Expression?,
-                    IntegerLiteralExpr(1),
+                    IntegerLiteralExpr("1"),
                     BinaryExpr.Operator.PLUS
                 )
             }
