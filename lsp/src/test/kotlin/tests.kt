@@ -14,6 +14,18 @@ import kotlin.test.assertTrue
 private val File.toUri: String
     get() = "file://${absolutePath}"
 
+
+val workspace = File("workspace")
+val languageServer = JmlLanguageServer().also {
+    val params = InitializeParams()
+    val workspaceFolder = WorkspaceFolder(workspace.toUri, "Test Bed")
+    params.workspaceFolders = arrayListOf(workspaceFolder)
+    it.connect(EmptyLanguageClient())
+    it.initialize(params).get()
+}
+
+val docService = languageServer.textDocumentService
+
 class EmptyLanguageClient : LanguageClient {
     override fun telemetryEvent(`object`: Any?) {
     }
@@ -31,16 +43,6 @@ class EmptyLanguageClient : LanguageClient {
     override fun logMessage(message: MessageParams?) {
     }
 }
-
-val workspace = File("workspace/")
-val languageServer = JmlLanguageServer().also {
-    val params = InitializeParams()
-    params.workspaceFolders = arrayListOf(WorkspaceFolder(workspace.toUri, "Test Bed"))
-    it.connect(EmptyLanguageClient())
-    it.initialize(params)
-}
-
-val docService = languageServer.textDocumentService
 
 class HoverTest {
 

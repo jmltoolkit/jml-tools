@@ -44,7 +44,7 @@ class ProjectDefinitionService {
         if (fs != null) {
             val ws = fs.newWatchService()
             configFiles.map {
-                it.register(ws, StandardWatchEventKinds.ENTRY_MODIFY)
+                it.parent.register(ws, StandardWatchEventKinds.ENTRY_MODIFY)
             }
             backgroundThread = Thread(Watcher(ws)).also { it.start() }
         }

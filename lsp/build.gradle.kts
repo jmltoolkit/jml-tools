@@ -15,6 +15,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     //implementation(kotlin("serialization"))
+    implementation(kotlin("serialization"))
 
     implementation(project(":utils"))
     implementation(project(":smt"))
@@ -34,8 +35,6 @@ dependencies {
 
     implementation("org.key-project:key.core:2.12.3")
     implementation("org.key-project:key.ui:2.12.3")
-
-    //implementation("org.apache.groovy:groovy:4.0.6")
 }
 
 application {

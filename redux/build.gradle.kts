@@ -3,7 +3,5 @@ plugins {
 }
 
 dependencies {
-    api(libs.jmlcore)
-    api(libs.jmlsymbol)
     implementation(project(":utils"))
 }

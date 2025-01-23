@@ -2,11 +2,6 @@ plugins {
     id("standard-kotlin")
 }
 
-group = "io.github.jmltoolkit"
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")

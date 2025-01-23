@@ -8,11 +8,6 @@ group = "io.github.jmltoolkit"
 
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
-repositories {
-    mavenCentral()
-    maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
-}
-
 dependencies {
 }
 
@@ -33,13 +28,16 @@ java {
 
 
 repositories {
+    mavenLocal()
     mavenCentral()
-    maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
+    //maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
 dependencies {
     //truth = { module = "com.google.truth:truth", version = "1.10.1" }
     testImplementation(libs.findLibrary("truth").get())
+    api(libs.findLibrary("jmlcore").get()) { isChanging = true}
+
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
 }
