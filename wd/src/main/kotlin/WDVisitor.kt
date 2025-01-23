@@ -165,7 +165,11 @@ class WDVisitorExpr(smtLog: SmtQuery, private val translator: ArithmeticTranslat
         return term.makeTrue()
     }
 
-    override fun visit(n: PatternExpr, arg: Any?): SExpr {
+    override fun visit(n: RecordPatternExpr, arg: Any?): SExpr {
+        return term.makeTrue()
+    }
+
+    override fun visit(n: TypePatternExpr, arg: Any?): SExpr {
         return term.makeTrue()
     }
 

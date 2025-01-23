@@ -62,7 +62,7 @@ class KeyDocumentHighlighter : DocumentHighlighter {
             KeYLexer.MODALITYB,
             KeYLexer.MORE,
             KeYLexer.MODALITY,
-            KeYLexer.MODIFIES,
+            KeYLexer.MODIFIABLE,
             KeYLexer.APPLY_UPDATE_ON_RIGID,
             KeYLexer.ADDRULES,
             -> SupportedTokenTypes.KEYWORD.ordinal

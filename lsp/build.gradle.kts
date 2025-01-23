@@ -1,7 +1,7 @@
 plugins {
     id("standard-kotlin")
     kotlin("plugin.serialization") version libs.versions.kotlin.get()
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("application")
 }
 
@@ -28,12 +28,12 @@ dependencies {
     implementation("org.tinylog:tinylog-api:2.5.0-M2.1")
     implementation("org.tinylog:tinylog-impl:2.5.0")
 
-    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.21.2")
+    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.23.1")
 
-    implementation("com.github.ajalt.clikt:clikt:4.2.2")
+    implementation(libs.clickt)
 
-    implementation("org.key-project:key.core:2.12.2")
-    implementation("org.key-project:key.ui:2.12.2")
+    implementation("org.key-project:key.core:2.12.3")
+    implementation("org.key-project:key.ui:2.12.3")
 
     //implementation("org.apache.groovy:groovy:4.0.6")
 }

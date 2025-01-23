@@ -420,7 +420,8 @@ internal class ExpressionComplexity : GenericVisitorAdapter<Int, ExpressionCosts
             .sum()
     }
 
-    override fun visit(n: PatternExpr, arg: ExpressionCosts): Int = 0
+    override fun visit(n: TypePatternExpr, arg: ExpressionCosts): Int = 0
+    override fun visit(n: RecordPatternExpr, arg: ExpressionCosts?): Int = super.visit(n, arg)
 
     override fun visit(n: BooleanLiteralExpr, arg: ExpressionCosts): Int = 0
 

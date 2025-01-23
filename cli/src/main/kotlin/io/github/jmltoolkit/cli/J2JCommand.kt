@@ -1,6 +1,7 @@
 package io.github.jmltoolkit.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.default
@@ -13,10 +14,14 @@ import java.io.File
  * @version 1 (09.04.23)
  */
 class J2JCommand :
-    CliktCommand("jml2java", "Submit usage for a given customer and subscription, accepts one usage item") {
+    CliktCommand("jml2java") {
+    override fun help(context: Context): String =
+        "Submit usage for a given customer and subscription, accepts one usage item"
+
     private val outputFolder by option("-o", "--output", help = "Output folder of the Java Files")
         .file()
         .default(File("out"))
+
     private val jjbmcMode by option("jjbmc", "JBMC mode")
     private val files by argument("FILES").file().multiple()
     override fun run() {

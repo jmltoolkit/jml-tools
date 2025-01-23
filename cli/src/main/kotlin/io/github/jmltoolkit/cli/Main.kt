@@ -1,6 +1,7 @@
 package io.github.jmltoolkit.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
@@ -23,10 +24,13 @@ import java.io.File
 import java.io.FileNotFoundException
 import kotlin.jvm.optionals.getOrNull
 
-fun main(args: Array<String>) = Main().subcommands(
-    J2JCommand(), LintCommand(), PrettyPrintCommand(), XPathCommand(),
-    StatCommand(), WdCommand(),
-).main(args)
+fun main(args: Array<String>) {
+    var cmd = Main().subcommands(
+        J2JCommand(), LintCommand(), PrettyPrintCommand(), XPathCommand(),
+        StatCommand(), WdCommand(),
+    )
+    cmd.main(args)
+}
 
 /**
  * @author Alexander Weigl
@@ -39,7 +43,7 @@ class Main : CliktCommand() {
     }
 }
 
-abstract class FileBasedCommand(help: String, name: String) : CliktCommand(help, name) {
+abstract class FileBasedCommand(name: String) : CliktCommand(name) {
     val activeJmlKeys by option("--jml-key").multiple()
     val verbose by option("--verbose", "-v", help = "Level of verbosity").int().default(1)
     val disableJml by option("--disable-jml").flag()

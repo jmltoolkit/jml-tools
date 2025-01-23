@@ -242,7 +242,12 @@ class JmlExpr2Smt(private val smtLog: SmtQuery, val translator: ArithmeticTransl
         return SAtom(SmtType.STRING, null, ("\"" + n.asString()).toString() + "\"")
     }
 
-    override fun visit(n: PatternExpr?, arg: Any?): SExpr {
+
+    override fun visit(n: RecordPatternExpr, arg: Any?): SExpr {
+        return super.visit(n, arg)
+    }
+
+    override fun visit(n: TypePatternExpr, arg: Any?): SExpr {
         return super.visit(n, arg)
     }
 

@@ -1,5 +1,6 @@
 package io.github.jmltoolkit.cli
 
+import com.github.ajalt.clikt.core.Context
 import com.github.javaparser.ParserConfiguration
 import io.github.jmltoolkit.stat.ExpressionCosts
 import io.github.jmltoolkit.stat.StatVisitor
@@ -14,7 +15,9 @@ import javax.xml.transform.stream.StreamResult
  * @author Alexander Weigl
  * @version 1 (24.05.22)
  */
-class StatMain : FileBasedCommand("Statistics for JML specification", "stat") {
+class StatMain : FileBasedCommand("stat") {
+    override fun help(context: Context): String = "Statistics for JML specification"
+
     override fun run() {
         val config = ParserConfiguration()
         config.setProcessJml(true)
