@@ -12,8 +12,8 @@ dependencies {
     api(libs.jmlsymbol)
 
     testImplementation(kotlin("test"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
     //implementation(kotlin("serialization"))
 
     implementation(project(":utils"))
@@ -24,9 +24,9 @@ dependencies {
     implementation(project(":lint"))
     implementation(project(":jml2java"))
 
-    implementation("org.tinylog:tinylog-api-kotlin:2.5.0")
-    implementation("org.tinylog:tinylog-api:2.5.0-M2.1")
-    implementation("org.tinylog:tinylog-impl:2.5.0")
+    implementation("org.tinylog:tinylog-api-kotlin:2.7.0")
+    implementation("org.tinylog:tinylog-api:2.8.0-M1")
+    implementation("org.tinylog:tinylog-impl:2.7.0")
 
     implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.23.1")
 
