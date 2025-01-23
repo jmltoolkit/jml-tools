@@ -9,6 +9,8 @@ plugins {
     `kotlin-dsl`
 }
 
+group="io.github.jmltoolkit"
+
 repositories {
     // Use the plugin portal to apply community plugins in convention plugins.
     gradlePluginPortal()

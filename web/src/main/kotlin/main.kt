@@ -19,7 +19,6 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
-import io.ktor.util.pipeline.*
 import kotlinx.html.*
 import java.io.StringReader
 import java.util.*
@@ -41,7 +40,7 @@ fun main() {
     }.start(wait = true)
 }
 
-private suspend fun PipelineContext<Unit, ApplicationCall>.renderPage(params: Parameters? = null) {
+private suspend fun RoutingContext.renderPage(params: Parameters? = null) {
     val inputText = params?.get("input")
     val keyKey = params?.get("keyKey")
     val keyOpenJml = params?.get("keyOpenJml")

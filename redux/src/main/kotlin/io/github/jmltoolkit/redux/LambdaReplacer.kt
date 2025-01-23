@@ -6,9 +6,7 @@ import com.github.javaparser.ast.Node
 import com.github.javaparser.ast.NodeList
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration
 import com.github.javaparser.ast.body.MethodDeclaration
-import com.github.javaparser.ast.body.Parameter
 import com.github.javaparser.ast.body.TypeDeclaration
-import com.github.javaparser.ast.expr.Expression
 import com.github.javaparser.ast.expr.LambdaExpr
 import com.github.javaparser.ast.expr.ObjectCreationExpr
 import com.github.javaparser.ast.stmt.BlockStmt
@@ -17,7 +15,6 @@ import com.github.javaparser.ast.stmt.Statement
 import com.github.javaparser.ast.type.ClassOrInterfaceType
 import com.github.javaparser.utils.Pair
 import io.github.jmltoolkit.utils.Helper
-import java.util.*
 
 /**
  * Replaces lambda expression by an internal named class.
@@ -77,10 +74,9 @@ class LambdaReplacer(private val nameGenerator: NameGenerator) : Transformer {
         var returnType: String? = null
 
         if (body is BlockStmt) {
-            val last: Optional<Statement> = body.statements.last
-            returnType = last.flatMap { it: Statement -> it.asReturnStmt().expression }
-                .map { b: Expression -> b.calculateResolvedType().toString() }
-                .orElse(null)
+            val last: Statement? = body.statements.lastOrNull()
+            returnType = last?.let { it: Statement -> it.asReturnStmt().expression() }
+                ?.calculateResolvedType()?.toString()
         }
 
         if (body is ExpressionStmt) {
@@ -100,7 +96,7 @@ class LambdaReplacer(private val nameGenerator: NameGenerator) : Transformer {
             }
 
             1 -> {
-                val firstParam = lambdaExpr.parameters.first.get().typeAsString
+                val firstParam = lambdaExpr.parameters.firstOrNull()?.typeAsString
                 if (returnType == null) {
                     interfaze = "java.util.function.Consumer<$firstParam>"
                     md.setName("get")
@@ -111,14 +107,13 @@ class LambdaReplacer(private val nameGenerator: NameGenerator) : Transformer {
             }
 
             2 -> {
-                val firstParam = lambdaExpr.parameters.first.map { obj: Parameter -> obj.typeAsString }
-                    .orElse(null)
+                val firstParam = lambdaExpr.parameters.first()?.typeAsString
                 val secondParam = lambdaExpr.parameters[1].typeAsString
                 if (returnType == null) {
-                    interfaze = "java.util.function.Consumer<$firstParam>"
+                    interfaze = "java.util.function.BiConsumer<$firstParam,$secondParam>"
                     md.setName("get")
                 } else {
-                    interfaze = "java.util.function.BiFunction<\$firstParam, \$secondParam, \$returnType>"
+                    interfaze = "java.util.function.BiFunction<$firstParam, $secondParam, $returnType>"
                     md.setName("invoke")
                 }
             }

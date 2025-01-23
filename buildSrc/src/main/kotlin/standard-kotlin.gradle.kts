@@ -3,6 +3,9 @@ plugins {
     `java-library`
 }
 
+group = "io.github.jmltoolkit"
+
+
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 repositories {

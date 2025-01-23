@@ -48,7 +48,6 @@ open class BitVectorArithmeticTranslator(val smtLog: SmtQuery) : ArithmeticTrans
             MULTIPLY -> term.multiply(left, right)
             DIVIDE -> term.divide(left, right, true)
             REMAINDER -> term.modulo(left, right, true)
-            else -> error("Unmatch operator")
         }
 
     override fun makeChar(n: CharLiteralExpr): SExpr {
@@ -65,7 +64,7 @@ open class BitVectorArithmeticTranslator(val smtLog: SmtQuery) : ArithmeticTrans
             BITWISE_COMPLEMENT -> term.not(accept)
         }
 
-    override fun makeLong(n: LongLiteralExpr) = term.makeBitvector(64, n.asLong())
+    override fun makeLong(n: LongLiteralExpr) = term.makeBitvector(64, n.value.toBigInteger())
 
     override fun makeInt(n: IntegerLiteralExpr) = term.makeBitvector(32, n.asNumber().toLong())
 
