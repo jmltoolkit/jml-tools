@@ -28,7 +28,6 @@ jupiterparams = { module = "org.junit.jupiter:junit-jupiter-params", version.ref
 hamcrest = { module = "org.hamcrest:hamcrest-library", version = "2.2" }
 assertj = { module = "org.assertj:assertj-core", version = "3.20.2" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version = "4.9.1" }
-mockito = { module = "org.mockito:mockito-inline", version = "" }
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 ktor-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
