@@ -10,7 +10,7 @@ jupiter = "5.12.0"
 clickt = "5.0.3"
 jdk = "21"
 kotlin = "2.1.10"
-ktor = "3.0.3"
+ktor = "3.1.0"
 
 [libraries]
 clickt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clickt" }
@@ -22,7 +22,7 @@ logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 jcommander = { module = "com.beust:jcommander", version = "1.82" }
 lombok = { module = "org.projectlombok:lombok", version = "1.18.36" }
 truth = { module = "com.google.truth:truth", version = "1.4.4" }
-snakeyaml = { module = "org.yaml:snakeyaml", version = "2.3" }
+snakeyaml = { module = "org.yaml:snakeyaml", version = "2.4" }
 jupiterengine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "jupiter" }
 jupiterparams = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jupiter" }
 hamcrest = { module = "org.hamcrest:hamcrest-library", version = "3.0" }
