@@ -20,7 +20,7 @@ jmlcore = { module = "io.github.jmltoolkit:jmlparser-core", version.ref = "jmlpa
 jmlsymbol = { module = "io.github.jmltoolkit:jmlparser-symbol-solver-core", version.ref = "jmlparser" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 jcommander = { module = "com.beust:jcommander", version = "1.82" }
-lombok = { module = "org.projectlombok:lombok", version = "1.18.36" }
+lombok = { module = "org.projectlombok:lombok", version = "1.18.38" }
 truth = { module = "com.google.truth:truth", version = "1.4.4" }
 snakeyaml = { module = "org.yaml:snakeyaml", version = "2.4" }
 jupiterengine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "jupiter" }
