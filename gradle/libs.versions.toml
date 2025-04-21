@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-guava = "33.4.7-jre"
+guava = "33.4.8-jre"
 gson = "2.13.0"
 jmlparser = "3.26.2-b7-SNAPSHOT"
 logback = "1.5.18"
