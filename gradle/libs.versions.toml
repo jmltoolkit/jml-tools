@@ -3,7 +3,7 @@
 
 [versions]
 guava = "33.4.8-jre"
-gson = "2.13.0"
+gson = "2.13.1"
 jmlparser = "3.26.2-b7-SNAPSHOT"
 logback = "1.5.18"
 jupiter = "5.12.2"
