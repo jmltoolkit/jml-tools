@@ -12,8 +12,8 @@ dependencies {
     api(libs.jmlsymbol)
 
     testImplementation(kotlin("test"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     //implementation(kotlin("serialization"))
 
     implementation(project(":utils"))
