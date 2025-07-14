@@ -4,5 +4,5 @@ plugins {
 dependencies {
     api(libs.jmlcore)
     implementation(project(":utils"))
-    implementation("com.google.googlejavaformat:google-java-format:1.27.0")
+    implementation("com.google.googlejavaformat:google-java-format:1.28.0")
 }
