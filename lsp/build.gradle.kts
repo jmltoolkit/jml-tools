@@ -1,7 +1,7 @@
 plugins {
     id("standard-kotlin")
     kotlin("plugin.serialization") version libs.versions.kotlin.get()
-    id("com.gradleup.shadow") version "9.0.1"
+    id("com.gradleup.shadow") version "9.1.0"
     id("application")
 }
 
@@ -16,8 +16,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     //implementation(kotlin("serialization"))
     implementation(kotlin("serialization"))
-    runtimeOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    runtimeOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
     implementation(project(":utils"))
     implementation(project(":smt"))
