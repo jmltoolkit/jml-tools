@@ -16,7 +16,7 @@ ktor = "3.2.3"
 clickt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clickt" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
-jmlcore = { module = "io.github.jmltoolkit:jmlparser-core", version.ref = "jmlparser"}
+jmlcore = { module = "io.github.jmltoolkit:jmlparser-core", version.ref = "jmlparser" }
 jmlsymbol = { module = "io.github.jmltoolkit:jmlparser-symbol-solver-core", version.ref = "jmlparser" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 jcommander = { module = "com.beust:jcommander", version = "1.82" }
@@ -25,6 +25,7 @@ truth = { module = "com.google.truth:truth", version = "1.4.4" }
 snakeyaml = { module = "org.yaml:snakeyaml", version = "2.4" }
 jupiterengine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "jupiter" }
 jupiterparams = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jupiter" }
+hamcrest = { module = "org.hamcrest:hamcrest-library", version = "3.0" }
 assertj = { module = "org.assertj:assertj-core", version = "3.27.4" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version = "5.1.0" }
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -36,4 +37,4 @@ ktor-statuspages = { module = "io.ktor:ktor-server-status-pages", version.ref = 
 ktor-severhtml = { module = "io.ktor:ktor-server-html-builder", version.ref = "ktor" }
 
 [plugins]
-#jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
