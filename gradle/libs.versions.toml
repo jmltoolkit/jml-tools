@@ -3,14 +3,14 @@
 
 [versions]
 guava = "33.4.8-jre"
-gson = "2.13.1"
+gson = "2.13.2"
 jmlparser = "3.26.2-b7-SNAPSHOT"
 logback = "1.5.18"
 jupiter = "5.13.4"
 clickt = "5.0.3"
 jdk = "21"
-kotlin = "2.2.10"
-ktor = "3.2.3"
+kotlin = "2.2.20"
+ktor = "3.3.0"
 
 [libraries]
 clickt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clickt" }
@@ -21,7 +21,7 @@ jmlsymbol = { module = "io.github.jmltoolkit:jmlparser-symbol-solver-core", vers
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 jcommander = { module = "com.beust:jcommander", version = "1.82" }
 lombok = { module = "org.projectlombok:lombok", version = "1.18.40" }
-truth = { module = "com.google.truth:truth", version = "1.4.4" }
+truth = { module = "com.google.truth:truth", version = "1.4.5" }
 snakeyaml = { module = "org.yaml:snakeyaml", version = "2.5" }
 jupiterengine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "jupiter" }
 jupiterparams = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jupiter" }
