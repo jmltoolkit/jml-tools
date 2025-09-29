@@ -1,7 +1,7 @@
 plugins {
     id("standard-kotlin")
     kotlin("plugin.serialization") version libs.versions.kotlin.get()
-    id("com.gradleup.shadow") version "9.1.0"
+    id("com.gradleup.shadow") version "9.2.2"
     id("application")
 }
 
