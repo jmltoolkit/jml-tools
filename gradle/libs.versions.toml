@@ -10,7 +10,7 @@ jupiter = "6.0.1"
 clickt = "5.0.3"
 jdk = "21"
 kotlin = "2.2.21"
-ktor = "3.3.1"
+ktor = "3.3.2"
 
 [libraries]
 clickt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clickt" }
