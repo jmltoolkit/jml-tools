@@ -7,7 +7,7 @@ dependencies {
     api(libs.jmlsymbol)
     api(libs.gson)
     implementation(libs.logback)
-    implementation("se.bjurr.violations:violations-lib:1.160.2")
+    implementation("se.bjurr.violations:violations-lib:1.160.3")
 
     testImplementation(project(":utils"))
 }
