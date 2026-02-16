@@ -31,7 +31,7 @@ dependencies {
     implementation("org.tinylog:tinylog-api:2.8.0-M1")
     implementation("org.tinylog:tinylog-impl:2.7.0")
 
-    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.24.0")
+    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:1.0.0")
 
     implementation(libs.clickt)
 
