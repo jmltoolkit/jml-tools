@@ -5,12 +5,12 @@
 guava = "33.6.0-jre"
 gson = "2.14.0"
 jmlparser = "3.26.2-b7-SNAPSHOT"
-logback = "1.5.32"
-jupiter = "6.0.3"
+logback = "1.5.34"
+jupiter = "6.1.0"
 clickt = "5.1.0"
 jdk = "21"
-kotlin = "2.3.21"
-ktor = "3.4.3"
+kotlin = "2.4.0"
+ktor = "3.5.0"
 
 [libraries]
 clickt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clickt" }
